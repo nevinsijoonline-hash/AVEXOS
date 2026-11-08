@@ -23,7 +23,18 @@ public class WallpaperServiceTests : IDisposable
         AvexPaths.OverrideWallpaperDirForTests(_originalWallpaperDir);
         if (Directory.Exists(_tempDir))
         {
-            Directory.Delete(_tempDir, recursive: true);
+            for (int attempt = 0; attempt < 3; attempt++)
+            {
+                try
+                {
+                    Directory.Delete(_tempDir, recursive: true);
+                    break;
+                }
+                catch (IOException) when (attempt < 2)
+                {
+                    Thread.Sleep(100 * (attempt + 1));
+                }
+            }
         }
     }
 
@@ -141,7 +152,18 @@ public class MultiMonitorWallpaperTests : IDisposable
         AvexPaths.OverrideWallpaperDirForTests(_originalWallpaperDir);
         if (Directory.Exists(_tempDir))
         {
-            Directory.Delete(_tempDir, recursive: true);
+            for (int attempt = 0; attempt < 3; attempt++)
+            {
+                try
+                {
+                    Directory.Delete(_tempDir, recursive: true);
+                    break;
+                }
+                catch (IOException) when (attempt < 2)
+                {
+                    Thread.Sleep(100 * (attempt + 1));
+                }
+            }
         }
     }
 
@@ -247,7 +269,18 @@ public class MonitorSlideshowServiceTests : IDisposable
         AvexPaths.OverrideWallpaperDirForTests(_originalWallpaperDir);
         if (Directory.Exists(_tempDir))
         {
-            Directory.Delete(_tempDir, recursive: true);
+            for (int attempt = 0; attempt < 3; attempt++)
+            {
+                try
+                {
+                    Directory.Delete(_tempDir, recursive: true);
+                    break;
+                }
+                catch (IOException) when (attempt < 2)
+                {
+                    Thread.Sleep(100 * (attempt + 1));
+                }
+            }
         }
     }
 
