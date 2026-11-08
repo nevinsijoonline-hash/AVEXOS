@@ -115,6 +115,22 @@ public class WallpaperServiceTests : IDisposable
         var ex = Assert.Throws<UnauthorizedAccessException>(() => service.ImportWallpaper(source));
         Assert.Contains("reparse point", ex.Message, StringComparison.OrdinalIgnoreCase);
     }
+
+    [Fact]
+    public void ImportWallpaper_Accepts_Normal_Path_Without_ReparsePoints()
+    {
+        var guard = new AllowAllGuard();
+        var settings = new InMemorySettings();
+        var service = new WallpaperService(guard, settings);
+
+        var source = Path.Combine(_tempDir, "source.png");
+        File.WriteAllText(source, "test-data");
+
+        var result = service.ImportWallpaper(source);
+
+        Assert.True(File.Exists(result));
+        Assert.Equal("test-data", File.ReadAllText(result));
+    }
 }
 
 file class AllowAllGuard : IFileSystemGuard

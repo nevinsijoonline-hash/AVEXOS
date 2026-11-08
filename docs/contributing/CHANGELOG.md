@@ -9,7 +9,15 @@ by working date.
 
 ---
 
-## 2026-11-08 (latest) — security fix: SQLitePCLRaw vulnerability CVE-2025-6965
+## 2026-11-08 (latest) — security fix: mount point handling in ImportWallpaper
+
+### Fixed
+
+- **Complete reparse point path chain validation.** `ImportWallpaper` now walks the entire destination path chain (from leaf to root) checking for reparse points at every level, including mount points. The previous fix only checked the final file; this fix detects symlinks, junctions, and mount points at any directory level in the path. Uses `VerifyNoReparsePointsInPath` helper that checks both files and directories for `FileAttributes.ReparsePoint`. Test added to verify normal paths work correctly. [THREAT_MODEL.md](../security/THREAT_MODEL.md) §5 risk #4 now fully closed.
+
+---
+
+## 2026-11-08 — security fix: SQLitePCLRaw vulnerability CVE-2025-6965
 
 ### Fixed
 
@@ -567,7 +575,7 @@ Tracked so nobody has to rediscover it:
 
 | | Item |
 |---|---|
-| Security | **Handle-based re-check for reparse points** was fixed 2026-11-08 — `ImportWallpaper` now checks `FileAttributes.ReparsePoint` after the guard decision but before the copy, throwing `UnauthorizedAccessException` if a symlink or junction is detected. This closes T-T6 shape 2 for file symlinks. Mount points and device-level reparse points stay unhandled. [THREAT_MODEL.md](../security/THREAT_MODEL.md) §5 risk #4. |
+| Security | **Handle-based re-check for reparse points** was fixed 2026-11-08 — `ImportWallpaper` now walks the entire destination path chain checking `FileAttributes.ReparsePoint` for both files and directories after the guard decision but before the copy, throwing `UnauthorizedAccessException` if any symlink, junction, or mount point is detected. This fully closes T-T6 shape 2. [THREAT_MODEL.md](../security/THREAT_MODEL.md) §5 risk #4. |
 | Security | **SQLitePCLRaw.lib.e_sqlite3 advisory GHSA-2m69-gcr7-jv3q** was fixed 2026-11-08 — `Microsoft.Data.Sqlite` updated from 10.0.0 to 10.0.14, pulling in `SQLitePCLRaw` 2.1.13 (from 2.1.11). CVE-2025-6965 (numeric truncation in SQLite aggregate handling) resolved. `dotnet list package --vulnerable` reports no vulnerable packages. |
 | Security | `RegistryPolicy` prefix-shadowing was fixed 2026-11-08 — `IsWritable` now requires exact root match or root+backslash prefix, so `…\Control Panel\DesktopEvil` is denied. [THREAT_MODEL.md](../security/THREAT_MODEL.md) §5 risk #9. (`HKCU\Software\Classes` itself was removed from the list 2026-11-08 — see the top entry.) |
 | Correctness | Rollback verification was added 2026-11-08 — the pipeline now accepts an optional `verifyRollback` delegate and marks the operation `Failed` if it returns false. Risk level gating was added 2026-11-08 — High-risk changes now require a `confirmHighRisk` delegate. The direction-neutral success text was fixed 2026-11-08 — "Applied and verified." is now "Verified." so a restore does not claim an apply. |

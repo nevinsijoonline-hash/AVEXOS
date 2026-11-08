@@ -79,18 +79,41 @@ public sealed class WallpaperService : IWallpaperService
         var guard = _guard.EnsureWritable(dest);
         if (!guard.Allowed) throw new UnauthorizedAccessException($"Blocked by path guard: {guard.Reason}");
         
-        if (File.Exists(guard.CanonicalPath))
-        {
-            var attributes = File.GetAttributes(guard.CanonicalPath);
-            if ((attributes & FileAttributes.ReparsePoint) != 0)
-            {
-                throw new UnauthorizedAccessException($"Destination is a reparse point (symlink or junction): {guard.CanonicalPath}");
-            }
-        }
+        VerifyNoReparsePointsInPath(guard.CanonicalPath);
         
         Directory.CreateDirectory(AvexPaths.WallpaperDir);
         File.Copy(sourcePath, guard.CanonicalPath, overwrite: true);
         return guard.CanonicalPath;
+    }
+    
+    private static void VerifyNoReparsePointsInPath(string path)
+    {
+        var current = path;
+        while (!string.IsNullOrEmpty(current))
+        {
+            if (File.Exists(current))
+            {
+                var fileAttributes = File.GetAttributes(current);
+                if ((fileAttributes & FileAttributes.ReparsePoint) != 0)
+                {
+                    throw new UnauthorizedAccessException($"Path contains a reparse point (symlink, junction, or mount point): {current}");
+                }
+                break;
+            }
+            
+            if (Directory.Exists(current))
+            {
+                var dirAttributes = File.GetAttributes(current);
+                if ((dirAttributes & FileAttributes.ReparsePoint) != 0)
+                {
+                    throw new UnauthorizedAccessException($"Path contains a reparse point (symlink, junction, or mount point): {current}");
+                }
+            }
+            
+            var parent = Path.GetDirectoryName(current);
+            if (parent == current) break;
+            current = parent;
+        }
     }
 
     // ── Multi-monitor support ──────────────────────────────────────────
