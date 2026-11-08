@@ -439,7 +439,7 @@ turns `color`/`radius`/`space`/`type` values into brushes or setters.** Two them
 
 ## 11. Testing
 
-**[built]** — four xUnit projects, 46 tests total (29 + 6 + 8 + 3), green on 2026-11-08 with
+**[built]** — five xUnit projects, 55 tests total (29 + 6 + 8 + 3 + 9), green on 2026-11-08 with
 `dotnet test AVEXOS.slnx`:
 
 | Suite | File | Covers |
@@ -450,6 +450,8 @@ turns `color`/`radius`/`space`/`type` values into brushes or setters.** Two them
 | `AVEXOS.Backup.Tests` | [JsonBackupStoreTests.cs](../../tests/AVEXOS.Backup.Tests/JsonBackupStoreTests.cs) | 3 cases: tampered backup rejected, unhashed backup rejected, valid hashed backup accepted |
 | `AVEXOS.Core.Tests` | [ChangePipelineTests.cs](../../tests/AVEXOS.Core.Tests/ChangePipelineTests.cs) | 3 cases: rollback with verifyRollback=false reports Failed, rollback with verifyRollback=true reports RolledBack, rollback without verifyRollback reports RolledBack |
 | `AVEXOS.Core.Tests` | [ChangePipelineRiskTests.cs](../../tests/AVEXOS.Core.Tests/ChangePipelineRiskTests.cs) | 3 cases: High-risk without confirmHighRisk denied, High-risk with confirmHighRisk=true succeeds, Low-risk without confirmHighRisk succeeds |
+| `AVEXOS.WindowsIntegration.Tests` | [WallpaperServiceTests.cs](../../tests/AVEXOS.WindowsIntegration.Tests/WallpaperServiceTests.cs) | 4 cases: ImportWallpaper copies file, throws on missing source, throws on guard deny, overwrites existing |
+| `AVEXOS.WindowsIntegration.Tests` | [AppDiscoveryServiceTests.cs](../../tests/AVEXOS.WindowsIntegration.Tests/AppDiscoveryServiceTests.cs) | 5 cases: returns results, required fields present, limited to 80, sorted by DisplayName, respects cancellation |
 
 No integration, compatibility, UI or performance suite exists. `JsonBackupStore`,
 `SqliteStore`, `WallpaperService` and `ThemeService` have **zero automated coverage** — the wallpaper

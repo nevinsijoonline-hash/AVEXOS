@@ -41,7 +41,7 @@ dotnet test tests\AVEXOS.Security.Tests\AVEXOS.Security.Tests.csproj --no-build
 dotnet test tests\AVEXOS.ThemeEngine.Tests\AVEXOS.ThemeEngine.Tests.csproj --no-build
 ```
 
-Verified on this host: **0 errors, 6 distinct warnings; 46 tests pass (29 + 6 + 8 + 3)**. MSBuild's headline
+Verified on this host: **0 errors, 6 distinct warnings; 55 tests pass (29 + 6 + 8 + 3 + 9)**. MSBuild's headline
 warning total is an occurrence count and reads 10 incremental / 12 with `-t:Rebuild` — see the README.
 
 ### Build the solution, never a single csproj
@@ -301,7 +301,7 @@ from "AVEX restored the original".
 Honest list, roughly in the order it hurts:
 
 1. **No tests for anything that writes.** `WallpaperService`, `ChangePipeline`, `AppDiscoveryService`,
-   `JsonBackupStore` and all UI are untested. The 46 passing tests cover path policy, registry policy,
+   `JsonBackupStore` and all UI are untested. The 55 passing tests cover path policy, registry policy,
    backup integrity and theme validation.
 2. `NU1903` — `SQLitePCLRaw.lib.e_sqlite3` 2.1.11 (transitive via `Microsoft.Data.Sqlite` 10.0.0) has
    a high-severity advisory, [GHSA-2m69-gcr7-jv3q](https://github.com/advisories/GHSA-2m69-gcr7-jv3q).

@@ -14,5 +14,6 @@
     <Project Path="tests/AVEXOS.Core.Tests/AVEXOS.Core.Tests.csproj" />
     <Project Path="tests/AVEXOS.Security.Tests/AVEXOS.Security.Tests.csproj" />
     <Project Path="tests/AVEXOS.ThemeEngine.Tests/AVEXOS.ThemeEngine.Tests.csproj" />
+    <Project Path="tests/AVEXOS.WindowsIntegration.Tests/AVEXOS.WindowsIntegration.Tests.csproj" />
   </Folder>
 </Solution>

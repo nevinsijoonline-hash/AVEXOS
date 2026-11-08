@@ -71,7 +71,7 @@ you are scripting against the app, check the window **class** before assuming it
 "%DOTNET_ROOT%\dotnet" test tests\AVEXOS.ThemeEngine.Tests
 ```
 
-Expected: 29 passed, 6 passed, 8 passed, and 3 passed.
+Expected: 29 passed, 6 passed, 8 passed, 3 passed, and 9 passed.
 
 Then confirm the app window exists:
 
