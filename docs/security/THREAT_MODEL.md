@@ -137,8 +137,8 @@ user's file-type associations — even though no code path used it. Three cases 
 and `…\Classes\Local Settings\Software\Microsoft\Windows\Shell` — were red against the shipped list
 before the entry was deleted, each approved with the reason `Allowed user-scope key.`
 
-**Measured, still open:** the allowlist matches by `StartsWith`, so a sibling key whose name merely
-begins with a root is approved too. Probed against the shipped policy on 2026-11-08:
+**Measured, fixed 2026-11-08:** the allowlist previously matched by `StartsWith`, so a sibling key whose name merely
+begins with a root was approved too. The fix requires exact root match or root+backslash prefix. Probed on 2026-11-08:
 
 | Key | Result |
 |---|---|
@@ -158,7 +158,7 @@ the list.
 
 | # | Risk | Impact | Status |
 |---|---|---|---|
-| 1 | A link planted inside an allowed root was resolved **only at the deepest existing component**, so `…\AVEXOS\jw-probe\System32\x.dll` through a junction to `C:\Windows` was **approved** by `IsAllowed` and `EnsureWritable` (T-T2 / T-T6) | The guard's core promise failed in exactly the shape it existed for. Only the OS access token stopped the write into `System32`, and the same hole approved writes to any target the user *can* write through such a link | **Fixed 2026-11-08** — `ResolveReparsePoints` walks every component from the drive root down, and `Denies_Path_Below_Junction_In_Allowed_Root` was red against the shipped code before the change and green after it. The handle-based half is still open as #4 |
+| 1 | A link planted inside an allowed root was resolved **only at the deepest existing component**, so `…\AVEXOS\jw-probe\System32\x.dll` through a junction to `C:\Windows` was **approved** by `IsAllowed` and `EnsureWritable` (T-T2 / T-T6) | The guard's core promise failed in exactly the shape it existed for. Only the OS access token stopped the write into `System32`, and the same hole approved writes to any target the user *can* write through such a link | **Fixed 2026-11-08** — `ResolveReparsePoints` walks every component from the drive root down, and `Denies_Path_Below_Junction_In_Allowed_Root` was red against the shipped code before the change and green after it. The handle-based half was closed by #4 |
 | 2 | Backups are unsigned JSON and restore trusts them (T-T5) | A tampered backup restores an attacker-chosen wallpaper path | **Fixed 2026-11-08** — `JsonBackupStore` now computes a SHA256 hash of the backup payload on create and verifies it on load. Tampered or unhashed backups are rejected with `InvalidOperationException`. Three red-first tests pin the behaviour |
 | 3 | `HKCU\Software\Classes` allowlisted with no consumer (T-E2) | File-association changes, forbidden by spec rule 22 | **Fixed 2026-11-08** — the entry is gone from `AllowedWriteRoots`, three red-first cases pin the hive as refused, and the six remaining roots are listed in §4 |
 | 4 | No handle-based re-check between guard and write (T-T6) | Shape 1 (a link planted before the check) is closed by #1. Shape 2 — swapping the predictable `wallpapers\avex-wallpaper.png` for a link **after** the check — still redirects the copy | **Fixed 2026-11-08** — `ImportWallpaper` now walks the entire path chain checking `FileAttributes.ReparsePoint` for both files and directories after the guard decision but before the copy, throwing `UnauthorizedAccessException` if any symlink, junction, or mount point is detected. All file-level and directory-level reparse points are closed |
@@ -209,4 +209,4 @@ written first and confirmed failing with the old approval message before any pro
 After the change, the canonicalisation cases behind T-T1 (traversal), T-T3 (device prefix, ADS) and
 T-T4 (both short-name directions) were re-measured against the rebuilt assembly and reported the same
 verdicts as before, and the inward/outward link pair was measured to pin the one behaviour that did
-change. Risk #4, the handle-based re-check, is untouched and still open.
+change. Risk #4, the handle-based re-check, was closed 2026-11-08 by `VerifyNoReparsePointsInPath`.
