@@ -4,8 +4,13 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <ScrollViewer>
         <StackPanel Spacing="16">
-            <TextBlock Text="AVEX OS" FontSize="28" FontWeight="SemiBold" />
-            <TextBlock Text="Control Center" FontSize="16" Foreground="{ThemeResource AvexTextSecondaryBrush}" />
+            <StackPanel Orientation="Horizontal" Spacing="16">
+                <Image Source="ms-appx:///assets/avex-logo.jpeg" Width="64" Height="64" />
+                <StackPanel>
+                    <TextBlock Text="AVEX OS" FontSize="28" FontWeight="SemiBold" />
+                    <TextBlock Text="Control Center" FontSize="16" Foreground="{ThemeResource AvexTextSecondaryBrush}" />
+                </StackPanel>
+            </StackPanel>
             <Grid ColumnSpacing="16" RowSpacing="16">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
