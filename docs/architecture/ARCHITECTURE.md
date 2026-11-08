@@ -439,7 +439,7 @@ turns `color`/`radius`/`space`/`type` values into brushes or setters.** Two them
 
 ## 11. Testing
 
-**[built]** — five xUnit projects, 55 tests total (29 + 6 + 8 + 3 + 9), green on 2026-11-08 with
+**[built]** — five xUnit projects, 65 tests total (29 + 6 + 18 + 3 + 9), green on 2026-11-08 with
 `dotnet test AVEXOS.slnx`:
 
 | Suite | File | Covers |
@@ -447,6 +447,7 @@ turns `color`/`radius`/`space`/`type` values into brushes or setters.** Two them
 | `AVEXOS.Security.Tests` | [ProtectedPathPolicyTests.cs](../../tests/AVEXOS.Security.Tests/ProtectedPathPolicyTests.cs) | 11 members, 15 cases: Windows paths ×5 `InlineData`, case variants, trailing dot, `\\?\` prefix, traversal out of the allowed root, allow inside the AVEX root, volume root, UNC, ADS suffix, the junction test, and `Denies_Path_Below_Junction_In_Allowed_Root` (§7's gap) |
 | `AVEXOS.Security.Tests` | [RegistryPolicyTests.cs](../../tests/AVEXOS.Security.Tests/RegistryPolicyTests.cs) | 6 members, 14 cases: HKLM rejected (both spellings), `Control Panel\Desktop` allowed, three non-allowlisted user keys refused with the exact reason string, `Denies_The_File_Association_Hive` ×3 for `HKCU\Software\Classes` (§4), `Denies_Prefix_Shadowing_Attempts` ×3, and `Allows_Legitimate_Subkeys` ×2 |
 | `AVEXOS.ThemeEngine.Tests` | [ThemeValidatorTests.cs](../../tests/AVEXOS.ThemeEngine.Tests/ThemeValidatorTests.cs) | id/name/version/mode/font rules, required and malformed colours, numeric ranges, Level D rejection |
+| `AVEXOS.ThemeEngine.Tests` | [ThemeResourceBuilderTests.cs](../../tests/AVEXOS.ThemeEngine.Tests/ThemeResourceBuilderTests.cs) | 10 cases: color entries with Avex prefix, brush references, PascalCase conversion, radius/space/motion/type scalars, font family, color/brush count parity, brush-to-color referential integrity |
 | `AVEXOS.Backup.Tests` | [JsonBackupStoreTests.cs](../../tests/AVEXOS.Backup.Tests/JsonBackupStoreTests.cs) | 3 cases: tampered backup rejected, unhashed backup rejected, valid hashed backup accepted |
 | `AVEXOS.Core.Tests` | [ChangePipelineTests.cs](../../tests/AVEXOS.Core.Tests/ChangePipelineTests.cs) | 3 cases: rollback with verifyRollback=false reports Failed, rollback with verifyRollback=true reports RolledBack, rollback without verifyRollback reports RolledBack |
 | `AVEXOS.Core.Tests` | [ChangePipelineRiskTests.cs](../../tests/AVEXOS.Core.Tests/ChangePipelineRiskTests.cs) | 3 cases: High-risk without confirmHighRisk denied, High-risk with confirmHighRisk=true succeeds, Low-risk without confirmHighRisk succeeds |
@@ -454,10 +455,11 @@ turns `color`/`radius`/`space`/`type` values into brushes or setters.** Two them
 | `AVEXOS.WindowsIntegration.Tests` | [AppDiscoveryServiceTests.cs](../../tests/AVEXOS.WindowsIntegration.Tests/AppDiscoveryServiceTests.cs) | 5 cases: returns results, required fields present, limited to 80, sorted by DisplayName, respects cancellation |
 
 No integration, compatibility, UI or performance suite exists. `JsonBackupStore`,
-`SqliteStore`, `WallpaperService` and `ThemeService` have **zero automated coverage** — the wallpaper
+`SqliteStore`, `WallpaperService` and `ThemeService` (WinUI wiring) have **zero automated coverage** — the wallpaper
 read/backup/apply/verify/restore cycle is verified by hand with
 [`gui-cycle.ps1`](../../scripts/gui-cycle.ps1), and the theme picker by
-[`theme-probe.ps1`](../../scripts/theme-probe.ps1).
+[`theme-probe.ps1`](../../scripts/theme-probe.ps1). `ThemeResourceBuilder` (the token-to-resource
+conversion) is covered by 10 unit tests.
 
 Two weaknesses in the security suite, so nobody reads a green row as more than it is:
 

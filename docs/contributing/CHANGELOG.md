@@ -9,7 +9,30 @@ by working date.
 
 ---
 
-## 2026-11-08 (latest) — RegistryPolicy prefix-shadowing fixed
+## 2026-11-08 (latest) — theme tokens now render into ResourceDictionary
+
+### Fixed
+
+- **Theme tokens were validated but never rendered.** `ThemeService.Apply` only flipped
+  `RequestedTheme` between Light and Dark, so each theme's own `color`/`radius`/`space`/`type`
+  values from the JSON were inert. A new `ThemeResourceBuilder` in `AVEXOS.ThemeEngine` converts a
+  `ThemeDocument` into a `ThemeResourceSet` (color hex values, brush references, scalar values for
+  radius/space/motion/type, and font family). `ThemeService.Apply` now loads the theme from the
+  catalog, builds the resource set, creates a WinUI `ResourceDictionary` with `Color`, `SolidColorBrush`,
+  `CornerRadius`, and scalar entries, and applies it to the root element's `MergedDictionaries`.
+  **TDD, in order:** added `ThemeResourceBuilderTests.cs` with 10 cases covering color key naming,
+  brush references, PascalCase conversion, radius/space/motion/type scalars, font family, and
+  referential integrity. All 10 failed against shipped code (ThemeResourceBuilder didn't exist);
+  after implementation, all 65 tests pass (29 + 6 + 18 + 3 + 9).
+
+### Documentation
+
+[ARCHITECTURE.md](../architecture/ARCHITECTURE.md) §11 (test count to 65, ThemeResourceBuilder row),
+[CHANGELOG.md](./CHANGELOG.md) unresolved table (theme tokens row removed, coverage row updated).
+
+---
+
+## 2026-11-08 (newer) — RegistryPolicy prefix-shadowing fixed
 
 ### Fixed
 
@@ -428,8 +451,7 @@ Tracked so nobody has to rediscover it:
 | Security | `SQLitePCLRaw.lib.e_sqlite3` 2.1.11 advisory GHSA-2m69-gcr7-jv3q, transitive via `Microsoft.Data.Sqlite` 10.0.0 — unresolved, and a reason not to ship. |
 | Security | `RegistryPolicy` prefix-shadowing was fixed 2026-11-08 — `IsWritable` now requires exact root match or root+backslash prefix, so `…\Control Panel\DesktopEvil` is denied. [THREAT_MODEL.md](../security/THREAT_MODEL.md) §5 risk #9. (`HKCU\Software\Classes` itself was removed from the list 2026-11-08 — see the top entry.) |
 | Correctness | Rollback verification was added 2026-11-08 — the pipeline now accepts an optional `verifyRollback` delegate and marks the operation `Failed` if it returns false. Risk level gating was added 2026-11-08 — High-risk changes now require a `confirmHighRisk` delegate. The direction-neutral success text was fixed 2026-11-08 — "Applied and verified." is now "Verified." so a restore does not claim an apply. |
-| Coverage | No tests for any UI. The 55 tests cover path policy, registry policy (including prefix-shadowing), backup integrity, theme validation, pipeline rollback verification, risk gating, WallpaperService.ImportWallpaper, and AppDiscoveryService.DiscoverAsync. |
+| Coverage | No tests for any UI. The 65 tests cover path policy, registry policy (including prefix-shadowing), backup integrity, theme validation, theme resource building, pipeline rollback verification, risk gating, WallpaperService.ImportWallpaper, and AppDiscoveryService.DiscoverAsync. |
 | Scope | Only wallpaper ships. Shortcuts, folder/drive icons, cursors, sounds, system accent, adapters, plugins, installer, signing, packaging: designed, **not implemented**. File-type icons are further out: the hive they live in is refused by the guard (rule 22). |
 | Scope | Theme apply affects the AVEX window only. It does not restyle Windows, and must not be described as if it did. |
-| Scope | A theme's own `color`/`radius`/`space`/`type` values are validated but **never rendered** — `Apply` only flips `RequestedTheme` between Light and Dark, so palettes in the JSON are inert and same-mode themes are indistinguishable. Rendering tokens into a `ResourceDictionary` is the prerequisite for calling this a theme engine. |
 | Hygiene | CS0168 unused-exception warnings fixed 2026-11-08 — catch blocks no longer declare unused `ex` variables. |
