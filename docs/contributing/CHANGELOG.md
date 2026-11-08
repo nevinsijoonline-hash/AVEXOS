@@ -9,7 +9,15 @@ by working date.
 
 ---
 
-## 2026-11-08 (latest) — privacy fix: app discovery consent prompt
+## 2026-11-08 (latest) — release integrity verification (risk #6)
+
+### Added
+
+- **SHA256 checksum generation and verification.** Scripts for generating and verifying checksums of built binaries, providing tamper detection for releases. `scripts/generate-checksums.ps1` creates `checksums.sha256` with hashes for all AVEXOS assemblies and native dependencies. `scripts/verify-checksums.ps1` validates binaries against the checksum file. Full documentation in [RELEASE_PROCESS.md](../setup/RELEASE_PROCESS.md) including code signing roadmap. This partially addresses T-S1 (supply chain integrity) from [THREAT_MODEL.md](../security/THREAT_MODEL.md) §5 risk #6 — checksums provide tamper detection but not publisher authentication (full code signing requires a certificate).
+
+---
+
+## 2026-11-08 — privacy fix: app discovery consent prompt
 
 ### Fixed
 
@@ -585,6 +593,7 @@ Tracked so nobody has to rediscover it:
 |---|---|
 | Security | **Handle-based re-check for reparse points** was fixed 2026-11-08 — `ImportWallpaper` now walks the entire destination path chain checking `FileAttributes.ReparsePoint` for both files and directories after the guard decision but before the copy, throwing `UnauthorizedAccessException` if any symlink, junction, or mount point is detected. This fully closes T-T6 shape 2. [THREAT_MODEL.md](../security/THREAT_MODEL.md) §5 risk #4. |
 | Security | **App discovery consent prompt** was fixed 2026-11-08 — `ApplicationsPage` now requires explicit user consent before scanning installed software. Consent is persisted in `"app.discovery.consent"` setting. [THREAT_MODEL.md](../security/THREAT_MODEL.md) §5 risk #5. |
+| Security | **Release integrity verification** was partially fixed 2026-11-08 — SHA256 checksum generation and verification scripts added. Checksums provide tamper detection but not publisher authentication. Full code signing requires a certificate. [THREAT_MODEL.md](../security/THREAT_MODEL.md) §5 risk #6. |
 | Security | **SQLitePCLRaw.lib.e_sqlite3 advisory GHSA-2m69-gcr7-jv3q** was fixed 2026-11-08 — `Microsoft.Data.Sqlite` updated from 10.0.0 to 10.0.14, pulling in `SQLitePCLRaw` 2.1.13 (from 2.1.11). CVE-2025-6965 (numeric truncation in SQLite aggregate handling) resolved. `dotnet list package --vulnerable` reports no vulnerable packages. |
 | Security | `RegistryPolicy` prefix-shadowing was fixed 2026-11-08 — `IsWritable` now requires exact root match or root+backslash prefix, so `…\Control Panel\DesktopEvil` is denied. [THREAT_MODEL.md](../security/THREAT_MODEL.md) §5 risk #9. (`HKCU\Software\Classes` itself was removed from the list 2026-11-08 — see the top entry.) |
 | Correctness | Rollback verification was added 2026-11-08 — the pipeline now accepts an optional `verifyRollback` delegate and marks the operation `Failed` if it returns false. Risk level gating was added 2026-11-08 — High-risk changes now require a `confirmHighRisk` delegate. The direction-neutral success text was fixed 2026-11-08 — "Applied and verified." is now "Verified." so a restore does not claim an apply. |
