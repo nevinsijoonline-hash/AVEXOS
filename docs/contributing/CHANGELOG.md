@@ -9,7 +9,24 @@ by working date.
 
 ---
 
-## 2026-11-08 (latest) — risk level now gates High-risk changes
+## 2026-11-08 (latest) — RegistryPolicy prefix-shadowing fixed
+
+### Fixed
+
+- **`RegistryPolicy.IsWritable` used `StartsWith`, so a sibling key beginning with an allowed root
+  was approved** (e.g., `…\Control Panel\DesktopEvil` → ALLOW). The check now requires either an exact
+  root match or root+backslash prefix, so only true subkeys are permitted.
+  **TDD, in order:** added `Denies_Prefix_Shadowing_Attempts` ×3 and `Allows_Legitimate_Subkeys` ×2
+  to `RegistryPolicyTests.cs`. The shadowing cases failed against the shipped code; after tightening
+  the match logic, all 29 security tests pass.
+
+### Documentation
+
+[CHANGELOG.md](./CHANGELOG.md) unresolved table — RegistryPolicy row updated to reflect the fix.
+
+---
+
+## 2026-11-08 (newer) — risk level now gates High-risk changes
 
 ### Fixed
 
@@ -409,10 +426,10 @@ Tracked so nobody has to rediscover it:
 |---|---|
 | Security | **No handle-based re-check between guard and write** (T-T6 shape 2): `ImportWallpaper` copies with `overwrite: true` onto a predictable filename, so a link planted there *after* the decision still redirects it. The pre-check half was fixed 2026-11-08 — see the top entry — and mount points stay unhandled. [THREAT_MODEL.md](../security/THREAT_MODEL.md) §5 risk #4. |
 | Security | `SQLitePCLRaw.lib.e_sqlite3` 2.1.11 advisory GHSA-2m69-gcr7-jv3q, transitive via `Microsoft.Data.Sqlite` 10.0.0 — unresolved, and a reason not to ship. |
-| Security | `RegistryPolicy` matches roots with `StartsWith`, so a sibling key beginning with a root is approved (`…\Control Panel\DesktopEvil` → ALLOW, measured). Harmless while no sensitive HKCU key is a prefix-extension of a root. [THREAT_MODEL.md](../security/THREAT_MODEL.md) §5 risk #9. (`HKCU\Software\Classes` itself was removed from the list 2026-11-08 — see the top entry.) |
+| Security | `RegistryPolicy` prefix-shadowing was fixed 2026-11-08 — `IsWritable` now requires exact root match or root+backslash prefix, so `…\Control Panel\DesktopEvil` is denied. [THREAT_MODEL.md](../security/THREAT_MODEL.md) §5 risk #9. (`HKCU\Software\Classes` itself was removed from the list 2026-11-08 — see the top entry.) |
 | Correctness | Rollback verification was added 2026-11-08 — the pipeline now accepts an optional `verifyRollback` delegate and marks the operation `Failed` if it returns false. Risk level gating was added 2026-11-08 — High-risk changes now require a `confirmHighRisk` delegate. The direction-neutral success text was fixed 2026-11-08 — "Applied and verified." is now "Verified." so a restore does not claim an apply. |
-| Coverage | No tests for `WallpaperService`, `AppDiscoveryService` or any UI. The 41 tests cover path policy, registry policy, backup integrity, theme validation, pipeline rollback verification and risk gating. |
+| Coverage | No tests for `WallpaperService`, `AppDiscoveryService` or any UI. The 46 tests cover path policy, registry policy (including prefix-shadowing), backup integrity, theme validation, pipeline rollback verification and risk gating. |
 | Scope | Only wallpaper ships. Shortcuts, folder/drive icons, cursors, sounds, system accent, adapters, plugins, installer, signing, packaging: designed, **not implemented**. File-type icons are further out: the hive they live in is refused by the guard (rule 22). |
 | Scope | Theme apply affects the AVEX window only. It does not restyle Windows, and must not be described as if it did. |
 | Scope | A theme's own `color`/`radius`/`space`/`type` values are validated but **never rendered** — `Apply` only flips `RequestedTheme` between Light and Dark, so palettes in the JSON are inert and same-mode themes are indistinguishable. Rendering tokens into a `ResourceDictionary` is the prerequisite for calling this a theme engine. |
-| Hygiene | Two `CS0168` unused-exception warnings where `ActivityPage` and `HomePage` swallow exceptions instead of surfacing them. |
+| Hygiene | CS0168 unused-exception warnings fixed 2026-11-08 — catch blocks no longer declare unused `ex` variables. |

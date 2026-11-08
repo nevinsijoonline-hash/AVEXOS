@@ -41,4 +41,26 @@ public class RegistryPolicyTests
         Assert.False(RegistryPolicy.IsWritable(keyPath, out var reason),
             $"Spec rule 22: {keyPath} was approved ({reason})");
     }
+
+    // Prefix-shadowing: a sibling key that begins with an allowed root must be denied.
+    // e.g., "Control Panel\DesktopEvil" starts with "Control Panel\Desktop" but is not a subkey.
+    [Theory]
+    [InlineData(@"HKEY_CURRENT_USER\Control Panel\DesktopEvil")]
+    [InlineData(@"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Themes\PersonalizeEvil")]
+    [InlineData(@"HKEY_CURRENT_USER\Control Panel\CursorsX")]
+    public void Denies_Prefix_Shadowing_Attempts(string keyPath)
+    {
+        Assert.False(RegistryPolicy.IsWritable(keyPath, out var reason),
+            $"Prefix-shadowing: {keyPath} was approved ({reason})");
+    }
+
+    // Legitimate subkeys of allowed roots must still be permitted.
+    [Theory]
+    [InlineData(@"HKEY_CURRENT_USER\Control Panel\Desktop\Wallpaper")]
+    [InlineData(@"HKEY_CURRENT_USER\Control Panel\Cursors\Arrow")]
+    public void Allows_Legitimate_Subkeys(string keyPath)
+    {
+        Assert.True(RegistryPolicy.IsWritable(keyPath, out var reason),
+            $"Legitimate subkey: {keyPath} was denied ({reason})");
+    }
 }

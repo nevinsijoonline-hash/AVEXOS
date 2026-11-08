@@ -439,13 +439,13 @@ turns `color`/`radius`/`space`/`type` values into brushes or setters.** Two them
 
 ## 11. Testing
 
-**[built]** — four xUnit projects, 41 tests total (24 + 8 + 3 + 6), green on 2026-11-08 with
+**[built]** — four xUnit projects, 46 tests total (29 + 6 + 8 + 3), green on 2026-11-08 with
 `dotnet test AVEXOS.slnx`:
 
 | Suite | File | Covers |
 |---|---|---|
 | `AVEXOS.Security.Tests` | [ProtectedPathPolicyTests.cs](../../tests/AVEXOS.Security.Tests/ProtectedPathPolicyTests.cs) | 11 members, 15 cases: Windows paths ×5 `InlineData`, case variants, trailing dot, `\\?\` prefix, traversal out of the allowed root, allow inside the AVEX root, volume root, UNC, ADS suffix, the junction test, and `Denies_Path_Below_Junction_In_Allowed_Root` (§7's gap) |
-| `AVEXOS.Security.Tests` | [RegistryPolicyTests.cs](../../tests/AVEXOS.Security.Tests/RegistryPolicyTests.cs) | 4 members, 9 cases: HKLM rejected (both spellings), `Control Panel\Desktop` allowed, three non-allowlisted user keys refused with the exact reason string, and `Denies_The_File_Association_Hive` ×3 for `HKCU\Software\Classes` (§4) |
+| `AVEXOS.Security.Tests` | [RegistryPolicyTests.cs](../../tests/AVEXOS.Security.Tests/RegistryPolicyTests.cs) | 6 members, 14 cases: HKLM rejected (both spellings), `Control Panel\Desktop` allowed, three non-allowlisted user keys refused with the exact reason string, `Denies_The_File_Association_Hive` ×3 for `HKCU\Software\Classes` (§4), `Denies_Prefix_Shadowing_Attempts` ×3, and `Allows_Legitimate_Subkeys` ×2 |
 | `AVEXOS.ThemeEngine.Tests` | [ThemeValidatorTests.cs](../../tests/AVEXOS.ThemeEngine.Tests/ThemeValidatorTests.cs) | id/name/version/mode/font rules, required and malformed colours, numeric ranges, Level D rejection |
 | `AVEXOS.Backup.Tests` | [JsonBackupStoreTests.cs](../../tests/AVEXOS.Backup.Tests/JsonBackupStoreTests.cs) | 3 cases: tampered backup rejected, unhashed backup rejected, valid hashed backup accepted |
 | `AVEXOS.Core.Tests` | [ChangePipelineTests.cs](../../tests/AVEXOS.Core.Tests/ChangePipelineTests.cs) | 3 cases: rollback with verifyRollback=false reports Failed, rollback with verifyRollback=true reports RolledBack, rollback without verifyRollback reports RolledBack |

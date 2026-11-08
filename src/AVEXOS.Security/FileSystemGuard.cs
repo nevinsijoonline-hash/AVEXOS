@@ -94,7 +94,13 @@ public static class RegistryPolicy
 
         foreach (var root in AllowedWriteRoots)
         {
-            if (keyPath.StartsWith(root, StringComparison.OrdinalIgnoreCase))
+            if (keyPath.Equals(root, StringComparison.OrdinalIgnoreCase))
+            {
+                reason = "Allowed user-scope key.";
+                return true;
+            }
+
+            if (keyPath.StartsWith(root + @"\", StringComparison.OrdinalIgnoreCase))
             {
                 reason = "Allowed user-scope key.";
                 return true;

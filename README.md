@@ -74,7 +74,7 @@ Stated plainly so nothing here is mistaken for a shipped feature:
 | .NET runtime | 10.0.14 (`Microsoft.NETCore.App`) |
 | Windows App Runtime | 2.6.5 installed machine-wide |
 | Solution build | Succeeds — 0 errors, 6 distinct warnings (below) |
-| Tests | 41 pass (24 Security, 8 ThemeEngine, 3 Backup, 6 Core) |
+| Tests | 46 pass (29 Security, 6 Core, 8 ThemeEngine, 3 Backup) |
 | Unpackaged launch | Works — **requires `DOTNET_ROOT`**; without it the apphost shows a missing-runtime dialog |
 | Packaged launch | Blocked — Developer Mode disabled |
 | Windows SDK | 10.0.26100 · VS Build Tools 17.14.41 |
