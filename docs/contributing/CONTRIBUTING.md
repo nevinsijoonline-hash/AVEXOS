@@ -56,7 +56,7 @@ dotnet test tests\AVEXOS.ThemeEngine.Tests\AVEXOS.ThemeEngine.Tests.csproj --no-
 Green baseline on 2026-11-08: **0 errors, 0 warnings, 305 tests passing (94 + 15 + 44 + 29 + 28 + 95)**.
 
 - **The security suite is a release gate.** A failing `ProtectedPathPolicyTests` or
-  `RegistryPolicyTests` case blocks the change, full stop. Those 24 cases are the reason the guard means
+  `RegistryPolicyTests` case blocks the change, full stop. Those 29 cases are the reason the guard means
   something: each one is a request the app is promised to refuse.
 - Do not introduce new build warnings — zero today. The `NU1903` (SQLitePCLRaw advisory) and `CS0168`
   (unused exception) warnings that previously existed have been resolved.
