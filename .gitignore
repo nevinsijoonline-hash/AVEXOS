@@ -55,5 +55,8 @@ project.fragment.lock.json
 Thumbs.db
 Desktop.ini
 
+# Node
+node_modules/
+
 # Qoder session files
 *.jsonl
