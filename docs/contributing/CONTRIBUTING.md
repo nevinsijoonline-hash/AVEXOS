@@ -53,15 +53,13 @@ dotnet test tests\AVEXOS.Security.Tests\AVEXOS.Security.Tests.csproj --no-build
 dotnet test tests\AVEXOS.ThemeEngine.Tests\AVEXOS.ThemeEngine.Tests.csproj --no-build
 ```
 
-Green baseline on 2026-11-08: **0 errors, 6 distinct warnings, 178 tests passing (22 + 28 + 15 + 32 + 29 + 52)**.
+Green baseline on 2026-11-08: **0 errors, 0 warnings, 305 tests passing (94 + 15 + 44 + 29 + 28 + 95)**.
 
 - **The security suite is a release gate.** A failing `ProtectedPathPolicyTests` or
   `RegistryPolicyTests` case blocks the change, full stop. Those 24 cases are the reason the guard means
   something: each one is a request the app is promised to refuse.
-- Do not increase the distinct warning count — six today: four `NU1903` (the SQLitePCLRaw advisory, one
-  per project that transitively references it) and two `CS0168`. Both are documented debt, not a licence
-  to add more. Do not chase MSBuild's headline total either; it counts occurrences and moves between 10
-  and 12 depending on whether you rebuilt.
+- Do not introduce new build warnings — zero today. The `NU1903` (SQLitePCLRaw advisory) and `CS0168`
+  (unused exception) warnings that previously existed have been resolved.
 - Build the **solution**, never a single csproj — the two write to different output directories and a
   csproj build that "succeeds" will silently leave you testing an old binary
   ([TROUBLESHOOTING.md](../operations/TROUBLESHOOTING.md) §2). Stop the running app first; a live

@@ -41,8 +41,7 @@ dotnet test tests\AVEXOS.Security.Tests\AVEXOS.Security.Tests.csproj --no-build
 dotnet test tests\AVEXOS.ThemeEngine.Tests\AVEXOS.ThemeEngine.Tests.csproj --no-build
 ```
 
-Verified on this host: **0 errors, 6 distinct warnings; 262 tests pass (44 + 28 + 15 + 94 + 29 + 52)**. MSBuild's headline
-warning total is an occurrence count and reads 10 incremental / 12 with `-t:Rebuild` — see the README.
+Verified on this host: **0 errors, 0 warnings; 305 tests pass (94 + 15 + 44 + 29 + 28 + 95)**.
 
 ### Build the solution, never a single csproj
 
@@ -300,14 +299,13 @@ from "AVEX restored the original".
 
 Honest list, roughly in the order it hurts:
 
-1. **No tests for anything that writes.** `WallpaperService`, `ChangePipeline`, `AppDiscoveryService`,
-   `JsonBackupStore` and all UI are untested. The 178 passing tests cover path policy, registry policy,
-   backup integrity and theme validation.
-2. `NU1903` — `SQLitePCLRaw.lib.e_sqlite3` 2.1.11 (transitive via `Microsoft.Data.Sqlite` 10.0.0) has
-   a high-severity advisory, [GHSA-2m69-gcr7-jv3q](https://github.com/advisories/GHSA-2m69-gcr7-jv3q).
-   Unresolved; 4 of the 6 distinct warnings (one per project that pulls in SQLite).
-3. `CS0168` × 2 — unused `catch (Exception ex)` variables in `ActivityPage` and `HomePage`, where the
-   exception is swallowed instead of surfaced.
+1. **Full UI automation missing.** The 305 tests cover path policy, registry policy, backup integrity,
+   theme engine, pipeline logic, wallpaper service, app discovery, shortcuts, theme scheduler, and UI
+   structure (XAML well-formedness, navigation consistency). Running-app interaction tests (launch,
+   navigate, click) require WinAppDriver or similar infrastructure not yet set up.
+2. ~~`NU1903`~~ — **resolved** 2026-11-08. Upgraded `Microsoft.Data.Sqlite` to 10.0.14 (pulls in
+   `SQLitePCLRaw` 2.1.13). Advisory [GHSA-2m69-gcr7-jv3q](https://github.com/advisories/GHSA-2m69-gcr7-jv3q) closed.
+3. ~~`CS0168`~~ — **resolved** 2026-11-08. Unused `catch (Exception ex)` variables removed.
 4. Pipeline rollback is not verified (ARCHITECTURE §5) and `RiskLevel` is recorded but never acts as a
    gate.
 5. Backups are unsigned and unhashed; `Load<T>` accepts whatever JSON is in the file.

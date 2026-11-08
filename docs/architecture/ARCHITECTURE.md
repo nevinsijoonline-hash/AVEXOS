@@ -439,7 +439,7 @@ turns `color`/`radius`/`space`/`type` values into brushes or setters.** Two them
 
 ## 11. Testing
 
-**[built]** — six xUnit projects, 262 tests total (44 + 28 + 15 + 94 + 29 + 52), green on 2026-11-08 with
+**[built]** — six xUnit projects, 305 tests total (94 + 15 + 44 + 29 + 28 + 95), green on 2026-11-08 with
 `dotnet test AVEXOS.slnx`:
 
 | Suite | File | Covers |
@@ -457,6 +457,7 @@ turns `color`/`radius`/`space`/`type` values into brushes or setters.** Two them
 | `AVEXOS.WindowsIntegration.Tests` | [MonitorDetectionTests.cs](../../tests/AVEXOS.WindowsIntegration.Tests/WallpaperServiceTests.cs) | 4 cases: non-null list, primary detection, fallback behavior |
 | `AVEXOS.App.Tests` | [ThemeSchedulerServiceTests.cs](../../tests/AVEXOS.App.Tests/ThemeSchedulerServiceTests.cs) | 8 cases: add/remove schedules, enable/disable persistence, JSON round-trip, disabled scheduler skips checks, time-match triggers apply, deduplication, first-match-wins |
 | `AVEXOS.App.Tests` | [ShortcutParserTests.cs](../../tests/AVEXOS.App.Tests/ShortcutParserTests.cs) | 44 cases: parsing valid/invalid shortcuts, format round-tripping, IsValid, IsSystemReserved, ConflictsWith, defaults completeness, special keys, case insensitivity |
+| `AVEXOS.App.Tests` | [UiStructureTests.cs](../../tests/AVEXOS.App.Tests/UiStructureTests.cs) | 42 cases: page XAML existence (×8), code-behind existence (×8), XAML well-formedness (×9), navigation items present with icons, ContentFrame exists, x:Class correctness (×8), App.xaml has ResourceDictionary, AvexTokens exists and is well-formed, Loaded handlers present |
 | `AVEXOS.ThemeEngine.Tests` | [UserThemeServiceTests.cs](../../tests/AVEXOS.ThemeEngine.Tests/UserThemeServiceTests.cs) | 9 cases: export creates valid JSON, import saves to user dir, import rejects invalid themes/missing files/bad JSON, delete removes files, LoadAll returns imported themes, LoadAll returns empty when no dir, export-then-import roundtrip |
 | `AVEXOS.Backup.Tests` | [SettingsBackupServiceTests.cs](../../tests/AVEXOS.Backup.Tests/SettingsBackupServiceTests.cs) | 11 cases: file creation/naming, JSON format, read/restore round-trip, tamper detection, missing file handling, listing order, deletion, retention cap at 10, empty settings, duplicate timestamps |
 | `AVEXOS.Core.Tests` | [SystemInfoServiceTests.cs](../../tests/AVEXOS.Core.Tests/SystemInfoServiceTests.cs) | 16 cases: Windows version, .NET version, app version, theme ID/mode defaults and stored values, session duration, machine/user name, processor count, memory, wallpaper path defaults and slideshow paths |

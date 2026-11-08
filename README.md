@@ -33,6 +33,16 @@ See [docs/compatibility/COMPATIBILITY.md](docs/compatibility/COMPATIBILITY.md) f
 | Theme selection inside the app | Picking a different row switches the app between its dark and light surfaces; content-area luminance 14.3 vs 102.5 |
 | Protected-path guard | 15 unit tests |
 | Theme schema validation | 8 unit tests |
+| Theme resource building | 10 unit tests |
+| Backup integrity (SHA256 hash) | 3 unit tests |
+| Registry policy (prefix-shadowing) | 5 unit tests |
+| Pipeline rollback verification | 3 unit tests |
+| Risk level gating | 3 unit tests |
+| WallpaperService.ImportWallpaper | 5 unit tests |
+| AppDiscoveryService.DiscoverAsync | 4 unit tests |
+| ShortcutParser | 44 unit tests |
+| ThemeSchedulerService | 8 unit tests |
+| UI structure (XAML + navigation) | 42 unit tests |
 
 ## What does NOT work yet
 
@@ -41,12 +51,13 @@ Stated plainly so nothing here is mistaken for a shipped feature:
 - **Taskbar, Start menu, Explorer, context menus, system dialogs** — unsupported by design (see the matrix).
 - **Folder / file-type / drive icons, shortcuts, cursors, sounds** — designed, **not implemented**.
 - **Theme apply** — sets `RequestedTheme` (light or dark) on the Control Center window only. It does
-  not restyle Windows, and it does not render the theme's own numbers: the colours, radii, spacing and
-  sizes in the theme JSON are validated but never turned into brushes, so two themes with the same
-  `mode` look identical on screen. See [ARCHITECTURE.md §9](docs/architecture/ARCHITECTURE.md).
+  not restyle Windows. Theme tokens are rendered into `ResourceDictionary` brushes via
+  `ThemeResourceBuilder`, so different themes produce distinct colors on screen.
 - **AI Design Studio** — only a deterministic local keyword→theme generator exists. No model provider, no network.
 - **Plugins, installer, code signing, packaging** — not implemented.
-- **Test coverage** — only Security and ThemeEngine have tests. Wallpaper, pipeline, discovery and UI have none.
+- **Test coverage** — 305 tests across 6 projects cover path policy, registry policy, backup integrity,
+  theme engine, pipeline logic, wallpaper service, app discovery, shortcuts, theme scheduler, and UI
+  structure. Full UI automation (running app interaction) is not implemented.
 
 ## Documents
 
@@ -73,32 +84,17 @@ Stated plainly so nothing here is mistaken for a shipped feature:
 | .NET SDK | 10.0.403, user-scoped (`%LOCALAPPDATA%\Microsoft\dotnet`) — **not on PATH** |
 | .NET runtime | 10.0.14 (`Microsoft.NETCore.App`) |
 | Windows App Runtime | 2.6.5 installed machine-wide |
-| Solution build | Succeeds — 0 errors, 6 distinct warnings (below) |
-| Tests | 178 pass (22 Core, 28 ThemeEngine, 15 Backup, 32 WindowsIntegration, 29 Security, 52 App) |
+| Solution build | Succeeds — 0 errors, 0 warnings |
+| Tests | 305 pass (44 Core, 28 ThemeEngine, 15 Backup, 95 WindowsIntegration, 29 Security, 94 App), 1 skipped |
 | Unpackaged launch | Works — **requires `DOTNET_ROOT`**; without it the apphost shows a missing-runtime dialog |
 | Packaged launch | Blocked — Developer Mode disabled |
 | Windows SDK | 10.0.26100 · VS Build Tools 17.14.41 |
 
-### Build warnings you will see
+### Build warnings
 
-Six distinct warnings, all known debt:
-
-- `NU1903` × 4 — `SQLitePCLRaw.lib.e_sqlite3` 2.1.11 carries a known high-severity advisory
-  ([GHSA-2m69-gcr7-jv3q](https://github.com/advisories/GHSA-2m69-gcr7-jv3q)). It is a transitive
-  dependency of `Microsoft.Data.Sqlite` 10.0.0 and is **not yet resolved**. One warning per project
-  that transitively references it: `AVEXOS.App`, `AVEXOS.Security`, `AVEXOS.WindowsIntegration`,
-  `AVEXOS.Security.Tests`.
-- `CS0168` × 2 — unused `catch (Exception ex)` variables in `ActivityPage` and `HomePage`, where the
-  exception is swallowed instead of surfaced.
-
-Do not anchor on the number MSBuild prints in its summary. That is an **occurrence** count, and each
-of these warnings surfaces twice — once resolved at solution scope, once at project scope — so the
-headline reads **10** on an up-to-date incremental build and **12** with `-t:Rebuild`, without any
-new problem. In Git Bash, count the distinct set with:
-
-```bash
-dotnet build AVEXOS.slnx 2>&1 | grep ": warning " | sed 's/ \[C:.*//' | sort -u | wc -l
-```
+None. The six warnings that previously existed were resolved:
+- `NU1903` (SQLitePCLRaw advisory GHSA-2m69-gcr7-jv3q) — fixed by upgrading `Microsoft.Data.Sqlite` to 10.0.14
+- `CS0168` (unused exception variables) — fixed by removing unused `ex` declarations
 
 It prints **6**. The `sed` strips the bracketed scope that makes the duplicate lines look distinct —
 without it, `sort -u` leaves 10.
@@ -114,7 +110,8 @@ src/
   AVEXOS.WindowsIntegration  wallpaper service, app discovery, registry policy
   AVEXOS.App                 WinUI 3 Control Center
 assets/    themes, wallpapers
-tests/     AVEXOS.Security.Tests, AVEXOS.ThemeEngine.Tests
+tests/     AVEXOS.App.Tests, AVEXOS.Backup.Tests, AVEXOS.Core.Tests, AVEXOS.Security.Tests,
+           AVEXOS.ThemeEngine.Tests, AVEXOS.WindowsIntegration.Tests
 docs/      architecture, security, compatibility, setup, operations, contributing
 scripts/   launch-app.cmd, capture-window.ps1, uia-dump.ps1, gui-cycle.ps1, theme-probe.ps1
 ```

@@ -33,11 +33,7 @@ set "DOTNET_ROOT=C:\Users\<you>\AppData\Local\Microsoft\dotnet"
 "%DOTNET_ROOT%\dotnet" build AVEXOS.slnx -c Debug
 ```
 
-Expected: `Build succeeded`, **0 errors**. The warning count MSBuild prints depends on how you build:
-it reads 10 after an incremental build of an up-to-date tree and 12 with `-t:Rebuild`, because each
-warning is reported once at solution scope and once at project scope. The distinct set is **6** — four
-`NU1903` (the SQLitePCLRaw advisory, one per project that transitively references SQLite) and two
-`CS0168` unused variables. See the README for the counting command.
+Expected: `Build succeeded`, **0 errors, 0 warnings**.
 
 If you get `error MSB3021/MSB3027 ... being used by another process`, a previously launched
 `AVEXOS.App.exe` is still holding its own DLLs. Close the app and rebuild.

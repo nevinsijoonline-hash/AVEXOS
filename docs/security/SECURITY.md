@@ -125,9 +125,9 @@ from a debug build directory via `scripts/launch-app.cmd`. Consequences worth st
   unsigned, unhashed JSON and `Load<T>` accepts whatever is in the file, so a restore trusts a
   user-writable blob. Recorded in [THREAT_MODEL.md](THREAT_MODEL.md) §5.
 - "Dependency scanning in CI; fails on known-vulnerable packages" — the only mechanism that exists is
-  `dotnet build` emitting `NU1903` **warnings**, and it does not fail: the current green build carries
-  8 of them for `SQLitePCLRaw.lib.e_sqlite3` 2.1.11 (GHSA-2m69-gcr7-jv3q). Treating that as "scanning
-  passes" would be wrong; the advisory is unresolved and open.
+  `dotnet build` emitting `NU1903` warnings when vulnerable packages are present. As of 2026-11-08,
+  the `SQLitePCLRaw.lib.e_sqlite3` advisory (GHSA-2m69-gcr7-jv3q) is **resolved** (upgraded to 2.1.13
+  via `Microsoft.Data.Sqlite` 10.0.14). Current build: 0 vulnerable-package warnings.
 
 ---
 

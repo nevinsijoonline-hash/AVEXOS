@@ -276,12 +276,11 @@ the value and the paint are two different claims.
 audit and operations tables come from the same `SqliteStore`; its two `Recent()` methods are explicit
 interface implementations, so calling them through the wrong interface queries the wrong table.
 
-### `NU1903` warnings on every build
+### ~~`NU1903` warnings on every build~~ — resolved 2026-11-08
 
-`SQLitePCLRaw.lib.e_sqlite3` 2.1.11, pulled transitively by `Microsoft.Data.Sqlite` 10.0.0, carries
-[GHSA-2m69-gcr7-jv3q](https://github.com/advisories/GHSA-2m69-gcr7-jv3q). It is **known and
-unresolved**, tracked in DEVELOPER_GUIDE §9. It does not affect wallpaper, path guarding or theme
-validation; it is a reason not to ship yet.
+`SQLitePCLRaw.lib.e_sqlite3` advisory [GHSA-2m69-gcr7-jv3q](https://github.com/advisories/GHSA-2m69-gcr7-jv3q)
+was resolved by upgrading `Microsoft.Data.Sqlite` from 10.0.0 to 10.0.14 (pulls `SQLitePCLRaw` 2.1.13).
+Current build: 0 vulnerable-package warnings.
 
 ---
 
