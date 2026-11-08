@@ -9,7 +9,15 @@ by working date.
 
 ---
 
-## 2026-11-08 (latest) — security fix: mount point handling in ImportWallpaper
+## 2026-11-08 (latest) — privacy fix: app discovery consent prompt
+
+### Fixed
+
+- **App discovery now requires explicit user consent.** `ApplicationsPage` checks for `"app.discovery.consent"` setting before running `AppDiscoveryService.DiscoverAsync()`. If consent not given, shows a `ContentDialog` explaining that the feature scans installed software from the Windows registry and that data stays local. User must click "I Consent" to proceed. Consent decision is persisted in settings. This closes T-I1 (information disclosure threat) from [THREAT_MODEL.md](../security/THREAT_MODEL.md) §5 risk #5.
+
+---
+
+## 2026-11-08 — security fix: mount point handling in ImportWallpaper
 
 ### Fixed
 
@@ -576,6 +584,7 @@ Tracked so nobody has to rediscover it:
 | | Item |
 |---|---|
 | Security | **Handle-based re-check for reparse points** was fixed 2026-11-08 — `ImportWallpaper` now walks the entire destination path chain checking `FileAttributes.ReparsePoint` for both files and directories after the guard decision but before the copy, throwing `UnauthorizedAccessException` if any symlink, junction, or mount point is detected. This fully closes T-T6 shape 2. [THREAT_MODEL.md](../security/THREAT_MODEL.md) §5 risk #4. |
+| Security | **App discovery consent prompt** was fixed 2026-11-08 — `ApplicationsPage` now requires explicit user consent before scanning installed software. Consent is persisted in `"app.discovery.consent"` setting. [THREAT_MODEL.md](../security/THREAT_MODEL.md) §5 risk #5. |
 | Security | **SQLitePCLRaw.lib.e_sqlite3 advisory GHSA-2m69-gcr7-jv3q** was fixed 2026-11-08 — `Microsoft.Data.Sqlite` updated from 10.0.0 to 10.0.14, pulling in `SQLitePCLRaw` 2.1.13 (from 2.1.11). CVE-2025-6965 (numeric truncation in SQLite aggregate handling) resolved. `dotnet list package --vulnerable` reports no vulnerable packages. |
 | Security | `RegistryPolicy` prefix-shadowing was fixed 2026-11-08 — `IsWritable` now requires exact root match or root+backslash prefix, so `…\Control Panel\DesktopEvil` is denied. [THREAT_MODEL.md](../security/THREAT_MODEL.md) §5 risk #9. (`HKCU\Software\Classes` itself was removed from the list 2026-11-08 — see the top entry.) |
 | Correctness | Rollback verification was added 2026-11-08 — the pipeline now accepts an optional `verifyRollback` delegate and marks the operation `Failed` if it returns false. Risk level gating was added 2026-11-08 — High-risk changes now require a `confirmHighRisk` delegate. The direction-neutral success text was fixed 2026-11-08 — "Applied and verified." is now "Verified." so a restore does not claim an apply. |
