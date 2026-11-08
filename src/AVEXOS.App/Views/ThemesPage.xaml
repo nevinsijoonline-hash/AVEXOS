@@ -2,7 +2,7 @@
     x:Class="AVEXOS.App.ThemesPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <ScrollViewer Padding="{StaticResource AvexSpaceLg}">
+    <ScrollViewer Padding="{StaticResource AvexPaddingLg}">
         <StackPanel Spacing="{StaticResource AvexSpaceLg}">
 
             <!-- Page Header -->
@@ -21,7 +21,7 @@
                     BorderBrush="{ThemeResource AvexBorderSubtleBrush}"
                     BorderThickness="1"
                     CornerRadius="{StaticResource AvexCardCornerRadius}"
-                    Padding="{StaticResource AvexSpaceLg}">
+                    Padding="{StaticResource AvexPaddingLg}">
                 <StackPanel Spacing="{StaticResource AvexSpaceMd}">
                     <TextBlock Text="Import / Export" FontSize="{StaticResource AvexTypeH3}" FontWeight="SemiBold"
                                Foreground="{ThemeResource AvexTextPrimaryBrush}" />
@@ -47,7 +47,7 @@
                     BorderBrush="{ThemeResource AvexBorderSubtleBrush}"
                     BorderThickness="1"
                     CornerRadius="{StaticResource AvexCardCornerRadius}"
-                    Padding="{StaticResource AvexSpaceLg}">
+                    Padding="{StaticResource AvexPaddingLg}">
                 <StackPanel Spacing="{StaticResource AvexSpaceMd}">
                     <ListView x:Name="ThemeList" MaxHeight="320" SelectionMode="Single"
                               SelectionChanged="ThemeList_SelectionChanged">
@@ -90,7 +90,7 @@
             <Border x:Name="PreviewBorder" Background="{ThemeResource AvexSurface1Brush}"
                     BorderBrush="{ThemeResource AvexBorderSubtleBrush}" BorderThickness="1"
                     CornerRadius="{StaticResource AvexCardCornerRadius}"
-                    Padding="{StaticResource AvexSpaceLg}" Visibility="Collapsed">
+                    Padding="{StaticResource AvexPaddingLg}" Visibility="Collapsed">
                 <StackPanel Spacing="{StaticResource AvexSpaceMd}">
                     <StackPanel Orientation="Horizontal" Spacing="{StaticResource AvexSpaceMd}">
                         <TextBlock Text="Theme Preview" FontSize="{StaticResource AvexTypeH3}" FontWeight="SemiBold"
@@ -111,7 +111,7 @@
                     <StackPanel Spacing="{StaticResource AvexSpaceXxs}">
                         <TextBlock Text="Sample Elements" FontSize="{StaticResource AvexTypeBodyLg}" FontWeight="SemiBold"
                                    Foreground="{ThemeResource AvexTextSecondaryBrush}" />
-                        <Border x:Name="PreviewSurface" CornerRadius="3" Padding="{StaticResource AvexSpaceMd}"
+                        <Border x:Name="PreviewSurface" CornerRadius="3" Padding="{StaticResource AvexPaddingMd}"
                                 BorderBrush="{ThemeResource AvexBorderSubtleBrush}" BorderThickness="1">
                             <StackPanel Spacing="{StaticResource AvexSpaceXs}" MaxWidth="400" HorizontalAlignment="Left">
                                 <TextBlock x:Name="PreviewTitle" Text="Preview Title Text" FontSize="{StaticResource AvexTypeH2}" FontWeight="SemiBold" />
@@ -141,7 +141,7 @@
                     BorderBrush="{ThemeResource AvexBorderSubtleBrush}"
                     BorderThickness="1"
                     CornerRadius="{StaticResource AvexCardCornerRadius}"
-                    Padding="{StaticResource AvexSpaceLg}">
+                    Padding="{StaticResource AvexPaddingLg}">
                 <StackPanel Spacing="{StaticResource AvexSpaceMd}">
                     <StackPanel Orientation="Horizontal" Spacing="{StaticResource AvexSpaceMd}">
                         <TextBlock Text="Enable Scheduler" FontSize="{StaticResource AvexTypeBodyLg}" FontWeight="SemiBold"
@@ -198,7 +198,7 @@
                     BorderBrush="{ThemeResource AvexBorderSubtleBrush}"
                     BorderThickness="1"
                     CornerRadius="{StaticResource AvexCardCornerRadius}"
-                    Padding="{StaticResource AvexSpaceLg}">
+                    Padding="{StaticResource AvexPaddingLg}">
                 <StackPanel Spacing="{StaticResource AvexSpaceMd}">
                     <StackPanel Spacing="{StaticResource AvexSpaceXxs}">
                         <TextBlock Text="PROMPT" FontSize="{StaticResource AvexTypeCaption}" FontWeight="SemiBold"

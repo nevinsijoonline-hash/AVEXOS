@@ -2,7 +2,7 @@
     x:Class="AVEXOS.App.SettingsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <ScrollViewer Padding="{StaticResource AvexSpaceLg}">
+    <ScrollViewer Padding="{StaticResource AvexPaddingLg}">
         <StackPanel Spacing="{StaticResource AvexSpaceLg}">
 
             <!-- Page Header -->
@@ -31,7 +31,7 @@
                     BorderBrush="{ThemeResource AvexBorderSubtleBrush}"
                     BorderThickness="1"
                     CornerRadius="{StaticResource AvexCardCornerRadius}"
-                    Padding="{StaticResource AvexSpaceLg}">
+                    Padding="{StaticResource AvexPaddingLg}">
                 <StackPanel Spacing="{StaticResource AvexSpaceMd}">
 
                     <!-- Toggle Theme -->
@@ -163,7 +163,7 @@
                     BorderBrush="{ThemeResource AvexBorderSubtleBrush}"
                     BorderThickness="1"
                     CornerRadius="{StaticResource AvexCardCornerRadius}"
-                    Padding="{StaticResource AvexSpaceLg}">
+                    Padding="{StaticResource AvexPaddingLg}">
                 <StackPanel Spacing="{StaticResource AvexSpaceMd}">
 
                     <!-- Backup actions -->
