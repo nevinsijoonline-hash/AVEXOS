@@ -45,6 +45,10 @@ by working date.
 
 **178 tests total** (22 Core + 28 ThemeEngine + 15 Backup + 32 WindowsIntegration + 29 Security + 52 App), all passing. New test projects: `AVEXOS.App.Tests` for ThemeSchedulerService and ShortcutParser.
 
+### Fixed
+
+- **Test parallelization race condition.** `JsonBackupStoreTests` and `SettingsBackupServiceTests` both called `AvexPaths.OverrideBackupDirForTests()` with different directories, causing intermittent failures when xUnit ran them in parallel (shared static state). Added `BackupTestCollection` with `DisableParallelization = true` and marked both test classes with `[Collection("BackupTests")]` to ensure sequential execution.
+
 ### Documentation
 
 [ARCHITECTURE.md](../architecture/ARCHITECTURE.md) §11 (test count to 178, new test rows), [README.md](../../README.md) (test count), [DEVELOPER_GUIDE.md](../setup/DEVELOPER_GUIDE.md) (test count), [CONTRIBUTING.md](CONTRIBUTING.md) (test count).
