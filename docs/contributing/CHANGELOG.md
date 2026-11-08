@@ -9,7 +9,39 @@ by working date.
 
 ---
 
-## 2026-11-08 (latest) — 4 productivity features: workspace profiles, focus/presentation modes, auto-brightness
+## 2026-11-08 (latest) — full Windows host theming applied
+
+### Added
+
+- **AVEX OS theme applied to Windows host.** Registry-based theming covering DWM colorization, dark mode, Control Panel colors, and app-specific configs for Windows Terminal, Microsoft Edge, and Microsoft Office.
+
+  - **DWM colorization.** `ColorizationColor` → `0xFF8B6E` (AVEX accent #6E8BFF in BGR), `ColorizationAfterglow` → `0xFF9980` (hover #8099FF), `EnableWindowColorization` → `1`. Window borders now use AVEX accent color.
+
+  - **Dark mode.** `AppsUseLightTheme` → `0`, `SystemUsesLightTheme` → `0`, `ColorPrevalence` → `1`, `EnableTransparency` → `1`. Taskbar, Start menu, and system UI use dark theme.
+
+  - **Control Panel colors.** `Menu` → `30 33 37` (surface #1E2125), `MenuText` → `236 237 239` (text #ECEDEF), `MenuHilight` → `110 139 255` (accent #6E8BFF), `Scrollbar` → `44 49 55` (surface variant #2C3137). System dialogs and legacy UI elements use AVEX palette.
+
+  - **Desktop wallpaper.** Set to `avex-logo-wallpaper.png` via `SystemParametersInfo`.
+
+  - **Windows Terminal.** Added "AVEX OS" color scheme (20 colors: background #141517, foreground #ECEDEF, accent #6E8BFF, etc.) to `settings.json`, set as default for all profiles. Backup: `settings.json.avex-backup`.
+
+  - **Microsoft Edge.** `dark_theme` → `1`, `DarkMode` → `1` in registry. Edge uses dark theme on next launch. Backup: `edge-registry-backup.reg`.
+
+  - **Microsoft Office.** `UI Theme` → `3` (Black theme), `OfficeStartTheme` → `"Dark Gray"`. All Office apps use darkest theme matching AVEX surface. Backup: `office-registry-backup.reg`.
+
+  - **Explorer restarted** to apply taskbar/context menu/DWM changes.
+
+### Documentation
+
+[WINDOWS_THEMING_AUDIT.md](../audit/WINDOWS_THEMING_AUDIT.md) (risk assessment of 10 theming areas), [WINDOWS_THEMING_ROLLBACK.md](../audit/WINDOWS_THEMING_ROLLBACK.md) (step-by-step rollback instructions with backup file locations).
+
+### Not applied
+
+**UXTheme patching** (system dialog custom visual styles) was not applied because it requires third-party tool installation (UltraUXThemePatcher), modifies system files (uxtheme.dll), and carries high risk of system instability. Registry-based changes cover most visible UI elements.
+
+---
+
+## 2026-11-08 — 4 productivity features: workspace profiles, focus/presentation modes, auto-brightness
 
 ### Added
 
