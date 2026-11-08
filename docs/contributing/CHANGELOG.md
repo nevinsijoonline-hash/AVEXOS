@@ -9,7 +9,19 @@ by working date.
 
 ---
 
-## 2026-11-08 (latest) — full Windows host theming applied
+## 2026-11-08 (latest) — security fix: TOCTOU vulnerability in ImportWallpaper
+
+### Fixed
+
+- **Handle-based re-check for reparse points.** `ImportWallpaper` now checks if the destination file is a reparse point (symlink or junction) after the guard check but before the copy operation. This closes the TOCTOU vulnerability (T-T6 shape 2) where a symlink planted at the predictable destination path between the guard decision and the file copy could redirect the write to a protected location. The fix uses `File.GetAttributes` to detect `FileAttributes.ReparsePoint` and throws `UnauthorizedAccessException` if detected. Test added (skipped by default as it requires administrator privileges to create reparse points). [THREAT_MODEL.md](../security/THREAT_MODEL.md) §5 risk #4 now partially closed.
+
+### Tests
+
+**263 tests total** (52 App + 15 Backup + 44 Core + 29 Security + 28 ThemeEngine + 95 WindowsIntegration), 262 passing, 1 skipped. Added 1 test for reparse point detection.
+
+---
+
+## 2026-11-08 — full Windows host theming applied
 
 ### Added
 
@@ -547,7 +559,7 @@ Tracked so nobody has to rediscover it:
 
 | | Item |
 |---|---|
-| Security | **No handle-based re-check between guard and write** (T-T6 shape 2): `ImportWallpaper` copies with `overwrite: true` onto a predictable filename, so a link planted there *after* the decision still redirects it. The pre-check half was fixed 2026-11-08 — see the top entry — and mount points stay unhandled. [THREAT_MODEL.md](../security/THREAT_MODEL.md) §5 risk #4. |
+| Security | **Handle-based re-check for reparse points** was fixed 2026-11-08 — `ImportWallpaper` now checks `FileAttributes.ReparsePoint` after the guard decision but before the copy, throwing `UnauthorizedAccessException` if a symlink or junction is detected. This closes T-T6 shape 2 for file symlinks. Mount points and device-level reparse points stay unhandled. [THREAT_MODEL.md](../security/THREAT_MODEL.md) §5 risk #4. |
 | Security | `SQLitePCLRaw.lib.e_sqlite3` 2.1.11 advisory GHSA-2m69-gcr7-jv3q, transitive via `Microsoft.Data.Sqlite` 10.0.0 — unresolved, and a reason not to ship. |
 | Security | `RegistryPolicy` prefix-shadowing was fixed 2026-11-08 — `IsWritable` now requires exact root match or root+backslash prefix, so `…\Control Panel\DesktopEvil` is denied. [THREAT_MODEL.md](../security/THREAT_MODEL.md) §5 risk #9. (`HKCU\Software\Classes` itself was removed from the list 2026-11-08 — see the top entry.) |
 | Correctness | Rollback verification was added 2026-11-08 — the pipeline now accepts an optional `verifyRollback` delegate and marks the operation `Failed` if it returns false. Risk level gating was added 2026-11-08 — High-risk changes now require a `confirmHighRisk` delegate. The direction-neutral success text was fixed 2026-11-08 — "Applied and verified." is now "Verified." so a restore does not claim an apply. |

@@ -78,6 +78,16 @@ public sealed class WallpaperService : IWallpaperService
         var dest = Path.Combine(AvexPaths.WallpaperDir, $"avex-logo-wallpaper{ext}");
         var guard = _guard.EnsureWritable(dest);
         if (!guard.Allowed) throw new UnauthorizedAccessException($"Blocked by path guard: {guard.Reason}");
+        
+        if (File.Exists(guard.CanonicalPath))
+        {
+            var attributes = File.GetAttributes(guard.CanonicalPath);
+            if ((attributes & FileAttributes.ReparsePoint) != 0)
+            {
+                throw new UnauthorizedAccessException($"Destination is a reparse point (symlink or junction): {guard.CanonicalPath}");
+            }
+        }
+        
         Directory.CreateDirectory(AvexPaths.WallpaperDir);
         File.Copy(sourcePath, guard.CanonicalPath, overwrite: true);
         return guard.CanonicalPath;

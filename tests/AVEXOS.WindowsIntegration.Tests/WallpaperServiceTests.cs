@@ -84,6 +84,26 @@ public class WallpaperServiceTests : IDisposable
 
         Assert.Equal("second-version", File.ReadAllText(result));
     }
+
+    [Fact(Skip = "Requires administrator privileges to create reparse points")]
+    public void ImportWallpaper_Rejects_ReparsePoint_At_Destination()
+    {
+        var guard = new AllowAllGuard();
+        var settings = new InMemorySettings();
+        var service = new WallpaperService(guard, settings);
+
+        var source = Path.Combine(_tempDir, "source.png");
+        File.WriteAllText(source, "legitimate-data");
+
+        var protectedDir = Path.Combine(_tempDir, "protected-dir");
+        Directory.CreateDirectory(protectedDir);
+
+        var destPath = Path.Combine(_tempDir, "avex-logo-wallpaper.png");
+        // Directory.CreateJunction(destPath, protectedDir); // Requires .NET 6+ and admin
+        
+        var ex = Assert.Throws<UnauthorizedAccessException>(() => service.ImportWallpaper(source));
+        Assert.Contains("reparse point", ex.Message, StringComparison.OrdinalIgnoreCase);
+    }
 }
 
 file class AllowAllGuard : IFileSystemGuard
