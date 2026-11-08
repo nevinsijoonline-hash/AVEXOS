@@ -1,0 +1,36 @@
+{
+  "id": "avex.light",
+  "name": "AVEX Light",
+  "version": "1.0.0",
+  "mode": "light",
+  "category": "builtin",
+  "author": "AVEX OS",
+  "description": "Porcelain surfaces with graphite text and a restrained blue accent.",
+  "fontFamily": "Segoe UI Variable",
+  "color": {
+    "bg.base": "#F4F5F7",
+    "bg.raised": "#FAFAFB",
+    "surface.1": "#FFFFFF",
+    "surface.2": "#EEF0F3",
+    "border.subtle": "#E1E4E8",
+    "border.strong": "#C9CED6",
+    "text.primary": "#1C1F23",
+    "text.secondary": "#565D68",
+    "text.tertiary": "#7C8591",
+    "accent": "#2F5BEA",
+    "accent.hover": "#1F49D6",
+    "success": "#2E8B57",
+    "warning": "#B7791F",
+    "danger": "#C0392B"
+  },
+  "radius": { "sm": 2, "md": 3, "lg": 5 },
+  "space": { "xs": 4, "sm": 8, "md": 12, "lg": 16, "xl": 24 },
+  "motion": { "fast": 130, "standard": 165 },
+  "type": { "display": 28, "h1": 20, "h2": 16, "h3": 14, "body": 13, "label": 12, "caption": 11, "mono": 12 },
+  "targets": {
+    "avex.controlcenter": { "level": "A" },
+    "windows.desktop.wallpaper": { "level": "B" },
+    "windows.system.theme-mode": { "level": "C" },
+    "windows.system.accent": { "level": "C" }
+  }
+}

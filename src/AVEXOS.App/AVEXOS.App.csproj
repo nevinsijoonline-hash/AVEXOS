@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <RootNamespace>AVEXOS.App</RootNamespace>
+    <Platforms>x64</Platforms>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <UseWinUI>true</UseWinUI>
+    <WinUISDKReferences>false</WinUISDKReferences>
+    <EnableMsixTooling>false</EnableMsixTooling>
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <EnableWinAppRunSupport>true</EnableWinAppRunSupport>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="*" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="*" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AVEXOS.Core\AVEXOS.Core.csproj" />
+    <ProjectReference Include="..\AVEXOS.Security\AVEXOS.Security.csproj" />
+    <ProjectReference Include="..\AVEXOS.ThemeEngine\AVEXOS.ThemeEngine.csproj" />
+    <ProjectReference Include="..\AVEXOS.Backup\AVEXOS.Backup.csproj" />
+    <ProjectReference Include="..\AVEXOS.WindowsIntegration\AVEXOS.WindowsIntegration.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\assets\wallpapers\avex-wallpaper.png" Link="assets\wallpapers\avex-wallpaper.png" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

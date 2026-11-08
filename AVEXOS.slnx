@@ -1,0 +1,18 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/AVEXOS.App/AVEXOS.App.csproj">
+      <Platform Project="x64" />
+    </Project>
+    <Project Path="src/AVEXOS.Backup/AVEXOS.Backup.csproj" />
+    <Project Path="src/AVEXOS.Core/AVEXOS.Core.csproj" />
+    <Project Path="src/AVEXOS.Security/AVEXOS.Security.csproj" />
+    <Project Path="src/AVEXOS.ThemeEngine/AVEXOS.ThemeEngine.csproj" />
+    <Project Path="src/AVEXOS.WindowsIntegration/AVEXOS.WindowsIntegration.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/AVEXOS.Backup.Tests/AVEXOS.Backup.Tests.csproj" />
+    <Project Path="tests/AVEXOS.Core.Tests/AVEXOS.Core.Tests.csproj" />
+    <Project Path="tests/AVEXOS.Security.Tests/AVEXOS.Security.Tests.csproj" />
+    <Project Path="tests/AVEXOS.ThemeEngine.Tests/AVEXOS.ThemeEngine.Tests.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,398 @@
+# Changelog
+
+Dated, factual entries. Nothing here claims a capability the
+[capability matrix](../compatibility/COMPATIBILITY.md) does not support, and every "verified" line
+points at how it was verified.
+
+The project has no releases yet — no version tag, no installer, no signed binary. Entries are grouped
+by working date.
+
+---
+
+## 2026-11-08 (latest) — rollback is now verified
+
+### Fixed
+
+- **`ChangePipeline.Rollback` trusted `restore()` to succeed.** If the restore delegate didn't throw
+  but the state wasn't actually restored, the operation was recorded as `RolledBack` and the host was
+  left half-changed. The pipeline now accepts an optional `verifyRollback` delegate that is called
+  after `restore()`; if it returns false, the operation is marked `Failed` instead of `RolledBack`.
+  **TDD, in order:** a new `AVEXOS.Core.Tests` project ran first with three cases: rollback with
+  verifyRollback=false reports Failed, rollback with verifyRollback=true reports RolledBack, rollback
+  without verifyRollback reports RolledBack. The first case failed against the shipped code (no
+  verifyRollback parameter); after adding the parameter and the verification logic, all three passed.
+  `AppearancePage` now passes a `verifyRollback` delegate that checks the wallpaper path matches the
+  original state.
+
+### Documentation
+
+[ARCHITECTURE.md](../architecture/ARCHITECTURE.md) §5 (signature, stage 13, gaps), §11 (test count) —
+all now describe the fixed behaviour.
+
+---
+
+## 2026-11-08 (newer) — the success text is now direction-neutral
+
+### Fixed
+
+- **A successful restore reported "Applied and verified."** The pipeline's success message did not
+  distinguish apply from restore, so the UI claimed a direction the operation did not take. The message
+  is now "Verified. Backup …" for both paths — direction-neutral and honest.
+  No test: the fix is a string change, and the pipeline is tested indirectly through the UI (which has
+  no automated coverage). The change was verified by reading the code and confirming the new string
+  appears in both the audit entry and the returned `ChangeResult.Detail`.
+
+### Documentation
+
+[ARCHITECTURE.md](../architecture/ARCHITECTURE.md) §5, [DEVELOPER_GUIDE.md](../setup/DEVELOPER_GUIDE.md)
+item 4, [BACKUP_AND_RECOVERY.md](../operations/BACKUP_AND_RECOVERY.md) §8 and §10,
+[CHANGELOG.md](./CHANGELOG.md) unresolved table — all now describe the fixed behaviour.
+
+---
+
+## 2026-11-08 (newest) — backups are now hashed
+
+### Fixed
+
+- **`JsonBackupStore.Load<T>` trusted any JSON file** (risk #2, open since the first security pass). A
+  user-writable backup directory meant an attacker (or a bug) could tamper with the payload and the
+  restore would accept it. Backups now carry a SHA256 hash of the payload, computed on create and
+  verified on load. Tampered or unhashed backups are rejected with `InvalidOperationException`.
+  **TDD, in order:** a new `AVEXOS.Backup.Tests` project ran first with three cases: tampered backup
+  rejected, unhashed backup rejected, valid hashed backup accepted. The first two failed against the
+  shipped code (no hash field, no verification); the third passed. After adding the `Hash` field to
+  `BackupFile<T>` and the verify logic to `Load<T>`, all three passed.
+
+### Breaking change
+
+Existing backups (created before this change) lack a hash field and will be rejected on load. This is
+intentional: accepting unhashed backups reopens the hole. The user's three existing backups from the
+wallpaper flow verification are now unusable; re-running the backup flow creates hashed backups.
+
+### Documentation
+
+[THREAT_MODEL.md](../security/THREAT_MODEL.md) §5 risk #2 → Fixed. Test counts updated in
+[ARCHITECTURE.md](../architecture/ARCHITECTURE.md) §11 (four projects, 38 tests),
+[DEVELOPER_GUIDE.md](../setup/DEVELOPER_GUIDE.md), [README.md](../../README.md),
+[CONTRIBUTING.md](./CONTRIBUTING.md), [INSTALLATION.md](../setup/INSTALLATION.md).
+
+`dotnet build AVEXOS.slnx`: **0 errors**, 6 distinct warnings (the new test project adds 2 NU1903
+occurrences, so the headline reads 14 incremental / 16 with `-t:Rebuild`). Tests: **35 passed** — 24
+`AVEXOS.Security.Tests`, 8 `AVEXOS.ThemeEngine.Tests`, 3 `AVEXOS.Backup.Tests`. No host write: the app
+was never launched, and `HKCU\Control Panel\Desktop\Wallpaper` is still the AVEX image pending your
+approval.
+
+---
+
+## 2026-11-08 (latest) — the association hive left the registry allowlist
+
+### Fixed
+
+- **`HKCU\Software\Classes` was policy-writable with no consumer** (risk #3, open since the first
+  security pass). `RegistryPolicy.AllowedWriteRoots` listed the file-association hive, so any defect that
+  reached the registry write path could change the current user's associations — what spec rule 22 forbids
+  outright. Nothing ever called it: the only `RegistryPolicy.IsWritable` call site in the shipped app is
+  `WallpaperService.cs:31`, against `Control Panel\Desktop`. Deleting the entry was the entire production
+  change.
+  **TDD, in order:** a new `RegistryPolicyTests` ran first and its three association cases failed against
+  the shipped list, each with the reason `Allowed user-scope key.` The other six cases — HKLM in both
+  spellings, `Control Panel\Desktop` still allowed, three non-allowlisted user keys refused with the exact
+  reason string — passed before *and* after, which is what proves the removal narrowed the policy instead
+  of breaking the one path the app uses.
+
+### Measured while proving it
+
+Root matching uses `StartsWith`, so a sibling key whose name merely begins with a root is approved too.
+Probed against the shipped policy (temporary test file, real code path, deleted after the run):
+`…\Control Panel\DesktopEvil`, `…\Control Panel\CursorsX`, `…\Software\Microsoft\Windows\DWMtuning` and
+`…\AppEvents\SchemesX` all return **ALLOW**, while `…\Software\Classes`, `…\Software\ClassesX`,
+`…\CurrentVersion\Run` and `…\CurrentVersion\RunEvil` are all **denied**. No *sensitive* HKCU location is a
+prefix-extension of an allowed root, so nothing reachable depends on it today. Recorded as risk #9 rather
+than fixed: the correct fix is a segment-boundary comparison, and inventing a failing case to justify it
+now would be designing for a requirement that does not exist yet.
+
+### Documentation
+
+Eight files repeated the seven-root count or described the hive as still allowlisted:
+[THREAT_MODEL.md](../security/THREAT_MODEL.md) §3/§4/§5, [SECURITY.md](../security/SECURITY.md)
+(Tampering row), [ARCHITECTURE.md](../architecture/ARCHITECTURE.md) §7 and §11,
+[DEVELOPER_GUIDE.md](../setup/DEVELOPER_GUIDE.md) rule 7 and debt item 11,
+[COMPATIBILITY.md](../compatibility/COMPATIBILITY.md) §0 and §2 — file-type icons moved from "safe to
+customize" to the rule-22 side, since the mechanism is now refused by our own guard —
+[TROUBLESHOOTING.md](../operations/TROUBLESHOOTING.md) §5, plus the counts in
+[README.md](../../README.md), [CONTRIBUTING.md](./CONTRIBUTING.md) and
+[INSTALLATION.md](../setup/INSTALLATION.md).
+
+`dotnet build AVEXOS.slnx`: **0 errors**, 6 distinct warnings. Tests: **32 passed** — 24
+`AVEXOS.Security.Tests` (15 path-policy cases + 9 registry-policy cases) and 8
+`AVEXOS.ThemeEngine.Tests`. No host write in this change: the app was never launched, `RegistryPolicy` is
+a pure string comparison with no registry API behind it, and `HKCU\Control Panel\Desktop\Wallpaper` is
+still the AVEX image pending your approval.
+
+---
+
+## 2026-11-08 (later) — the path-guard gap closed in code
+
+### Fixed
+
+- **`ProtectedPathPolicy` approved a path it promised to refuse.** `ResolveReparsePoints` started at the
+  leaf and, when the leaf did not exist, climbed to the **first existing ancestor** and resolved only
+  that one — so a junction inside an allowed root was refused at the link itself but approved one level
+  below it, because the directory reached *through* the link is not itself a reparse point.
+  `%LOCALAPPDATA%\AVEXOS\<link>\System32\x.dll` therefore canonicalised to itself and both `IsAllowed`
+  and `FileSystemGuard.EnsureWritable` returned ALLOW. Resolution is now component-wise from the drive
+  root, each step applied to the already-resolved prefix, and the path is refused as
+  `Protected system location (C:\WINDOWS).`
+  **TDD, in order:** `Denies_Path_Below_Junction_In_Allowed_Root` was written first and failed with
+  `Canonicalised to …\avex\j\System32\x.dll and approved: Allowed: inside AVEX OS data root.` The
+  production change came after that red run. The test plants a real junction into `C:\Windows` inside a
+  **temporary** allowed root (passed through the constructor's existing `allowedRoots` parameter), so it
+  never creates anything in the user's AVEX directory, and it removes the link with
+  `cmd /c rmdir` before any recursive delete — the target is never handed to a deleting API.
+  Measured side effects of the change, both documented: a link **inside** the root pointing **out** is
+  now refused (previously approved — the bug), while a link **outside** the root pointing **in** is now
+  approved where it used to be refused, because the bytes genuinely land inside the declared root. Every
+  guarded write call site (`WallpaperService:52`, `JsonBackupStore:26`, `ChangePipeline:42`) builds its
+  path from `AvexPaths`, so no caller can supply an arbitrary directory and reach that shape today. `C:\Windows\System32` was counted before and after
+  (4 576 files, `kernel32.dll` 861 992 bytes): untouched.
+- **Test cleanup left empty directories in `%TEMP%`.** Deleting a tree whose reparse point was just
+  removed throws once, and the old `catch { }` hid it; seven empty `avex-test-*` shells from earlier runs
+  were found and removed with `rmdir`. Cleanup now retries, and the run leaves nothing behind.
+
+`dotnet build AVEXOS.slnx`: **0 errors**, 6 distinct warnings (`NU1903` × 4 projects, `CS0168` × 2).
+The headline MSBuild prints is an occurrence count, so it reads 10 incremental and 12 with
+`-t:Rebuild`; both were measured on this tree on 2026-11-08. Tests then: **23 passed** — 15
+`AVEXOS.Security.Tests`, 8 `AVEXOS.ThemeEngine.Tests` (superseded by the entry above). Still open in this
+area: the handle-based re-check after the guard decides (T-T6 shape 2), mount points, and symlink chains,
+which cannot be created here without Developer Mode.
+
+---
+
+## 2026-11-08 — first vertical slice verified on the host
+
+### Fixed
+
+- **The app never launched.** `MainWindow.xaml` used UWP-style `Icon="Color"` / `Icon="PaintBrush"`
+  / `Icon="AllApps"` shorthand. WinUI 3's `Symbol` enum is a reduced subset, so XAML construction
+  threw `XamlParseException: Failed to create a 'Microsoft.UI.Xaml.Controls.IconElement' from the text
+  'Color'`, which surfaced as a native exit `0xC000027B` with no managed trace. Replaced all five with
+  explicit `<FontIcon Glyph="…"/>`. Verified: window class `WinUIDesktopWin32WindowClass`, title
+  `AVEX OS Control Center`, and a `PrintWindow` pixel histogram showing real content.
+- **Approval blocked the UI thread.** `ChangePipeline`'s `approve` hook took
+  `Func<ChangeRequest, bool>` and the page called `dialog.ShowAsync().GetAwaiter().GetResult()`,
+  deadlocking XAML's dispatcher with "Only a single ContentDialog can be open at any time." The hook
+  is now `Func<ChangeRequest, Task<bool>>` and is awaited — deliberately **without**
+  `ConfigureAwait(false)`, because apply/verify/restore are apartment-sensitive.
+- **Restore did not restore.** `AppearancePage` cached the state read at page load and refreshed that
+  field after every successful apply, so the Restore button re-applied the new wallpaper while the
+  status line reported success. The cached field is gone; Restore now resolves the **newest backup for
+  the target id** and runs it through `ChangePipeline`, which also removed a path that bypassed the
+  documented single mutating entry point.
+- **"You must install .NET" on launch.** Not a code defect: the SDK is user-scoped and absent from
+  `PATH`, so the apphost cannot find `Microsoft.NETCore.App`. `scripts/launch-app.cmd` now sets
+  `DOTNET_ROOT`. This failure mode was previously mistaken for a successful launch, because the dialog
+  runs as `AVEXOS.App.exe` with a live `MainWindowHandle`.
+- **Selecting a theme had no effect on what got applied.** `ThemesPage`'s `ListView` had no
+  `SelectionChanged` handler, so `_selectedTheme` stayed pinned to the catalog's first entry —
+  choosing "AVEX Light" applied "AVEX Dark". Wired the handler and made the list select its first row
+  explicitly. Verified with `scripts/theme-probe.ps1`: row 0 → content-area luminance 14.3, row 1 →
+  102.5, spread 88.2.
+
+### Added
+
+- Verification harnesses in `scripts/`: `launch-app.cmd`, `capture-window.ps1` (window enumeration +
+  `PrintWindow` capture and pixel histogram), `uia-dump.ps1`, `gui-cycle.ps1` (Restore → Apply with
+  approval → Restore, cross-checked against `HKCU\Control Panel\Desktop`), `theme-probe.ps1`.
+- Documentation for Part 25: `THREAT_MODEL`, `INSTALLATION`, `USER_GUIDE`, `DEVELOPER_GUIDE`,
+  `BACKUP_AND_RECOVERY`, `TROUBLESHOOTING`, `CONTRIBUTING`, `CHANGELOG`, alongside the earlier
+  `ARCHITECTURE`, `SECURITY`, `COMPATIBILITY`, `DESIGN_SYSTEM`.
+
+### Corrected in documentation
+
+- **`README.md`** claimed shortcuts, folder/file-type/drive icons, cursors and sounds shipped (they
+  are designed, not implemented), claimed a warning-free build (the build reported 10 warning lines
+  then — six distinct), and listed seven
+  projects that do not exist. Rewritten with verified / not-yet tables.
+- **`ARCHITECTURE.md`** was the Phase 1 *target* design presented as current: 13 projects (6 exist),
+  `IAppearanceAdapter`/`IChangeTarget`/`IAiProvider` and async store contracts that were never built,
+  seven SQLite tables (three exist), an architecture test that does not exist, a nested `tokens`
+  theme schema (the shipped shape is flat), and a `scripts/dev.ps1` that was never created. Every
+  section is now labelled **[built]** or **[planned]**.
+- **`ARCHITECTURE.md` §7–§12** needed a second pass, and it found more than the first one did: the
+  canonicalisation list claimed mounted-volume resolution and full reparse-chain handling the code does
+  not do; the allowed-write-root paragraph implied user folders like `Desktop` are opted in (only the
+  two AVEX roots are, because `App.xaml.cs:46` passes no arguments); §8 listed seven tables with
+  made-up columns; §9 showed a nested `tokens` shape and claimed fonts, icons and payload size are
+  validated and that tokens build a `ResourceDictionary` at runtime; §10 claimed an all-`async`
+  pipeline, discovery "cached in SQLite" with a 24 h staleness check, and quoted startup/CPU/memory
+  numbers that were never measured; §11 listed six suites where two exist; §12 listed thirteen projects
+  and directories that were never created.
+- **Measured a guard gap that no test covers.** Rather than reason about `ResolveReparsePoints`, a
+  throwaway console project referenced `AVEXOS.Security` and called `IsAllowed`/`EnsureWritable` on
+  concrete paths — writing nothing, opening no `C:\Windows` path, and removing the probe junctions with
+  `rmdir` afterwards. Result: a junction inside the allowed root is denied **at the link itself**
+  (`…\AVEXOS\jw-probe` → `C:\Windows` → protected location) and **approved one level below it** when the
+  leaf does not yet exist (`…\jw-probe\System32\x.dll` → ALLOW, by both entry points), because the walk
+  climbs past the missing leaf to an existing directory that is not itself a link and stops. The
+  parent-directory check rescues only the two-component case. `SECURITY.md` had claimed
+  `FILE_FLAG_OPEN_REPARSE_POINT` handle re-verification for exactly this; there is no handle and no
+  re-verification, so that row is corrected to **none**, and the gap is now risk #1 in
+  [THREAT_MODEL.md](../security/THREAT_MODEL.md) §5.
+- **And corrected a claim this very pass had just made.** The first draft of the §7 note said 8.3 short
+  names are never expanded. Testing it on .NET 10.0.14 showed they **are** expanded whenever the volume
+  resolves them: `C:\PROGRA~1\Common~1\x.dll` → `C:\Program Files\Common Files\x.dll`, refused as
+  `Protected system location (C:\Program Files).`. `C:\WINDOWS\SYSTEM~1\…` kept only its unresolvable
+  last component literal. The residue is therefore a **false refusal**, not a bypass —
+  `C:\Users\NEVIN~1\AppData\Local\AVEXOS\x.json` fails the allowlist and the app would refuse its own
+  legitimate path — now documented in [TROUBLESHOOTING.md §5](../operations/TROUBLESHOOTING.md). Also
+  measured: `%LOCALAPPDATA%\AVEXOS\..\..\Windows\System32` folds to `…\AppData\Windows\System32`, which
+  is not under `C:\Windows`, so `Denies_Traversal_From_Allowed_Root` is green on the allowlist rather
+  than on a protected-root match; `mklink /J` succeeds unprivileged here (so the junction test does
+  run), while symlinks would need Developer Mode (so that half is untested); and
+  `Environment.GetFolderPath(Windows)` reports `C:\WINDOWS` in uppercase on this host, which is why
+  denial reasons print it that way.
+- **Theme tokens are not rendered.** Reading `ThemeService.Apply` and the views showed that applying a
+  theme persists `theme.id`/`theme.mode` and sets `RequestedTheme` to Light or Dark — nothing turns
+  `color`/`radius`/`space`/`type` values into brushes. Consequences recorded in
+  [ARCHITECTURE.md §9](../architecture/ARCHITECTURE.md), [README.md](../../README.md),
+  [USER_GUIDE.md](../setup/USER_GUIDE.md) and
+  [DESIGN_SYSTEM.md](../architecture/DESIGN_SYSTEM.md): two themes with the same `mode` look
+  indistinguishable, and editing a colour in `avex-dark.json` changes nothing on screen. The verified
+  theme-probe result (14.3 vs 102.5) is therefore evidence of the **light/dark switch working**, not of
+  per-theme palettes — the README row now says so.
+- **`DESIGN_SYSTEM.md` was a target spec read as a status report.** Corrected section by section: only
+  the 14 dark + 14 light colour resources exist as brushes; the geometry, `control.height`,
+  `sidebar.width` and `motion` values are not resources at all (63 hardcoded `FontSize`/`Padding`/
+  `Spacing`/`CornerRadius` occurrences in the views, 35 of them in `HomePage.xaml`); `AvexFontFamily`
+  is declared and never referenced; no `body` 13 or `h3` 14 size is set; zero `Storyboard`/`VisualState`
+  /`TransitionCollection` declarations exist, so §4's timings describe framework defaults; zero
+  `AutomationProperties.Name` and no `AutomationLiveSetting`; no `OpenPaneLength`/`MaxWidth`/12-column
+  grid/density mode/adaptive breakpoint; and `assets/branding/`+`assets/icons/` are empty with **no
+  `.ico` file anywhere** — the five nav glyphs are Segoe Fluent Icons codepoints, not AVEX art.
+- `ApplicationsPage` was described as showing each app's **level**; it binds `DisplayName`, `Publisher`
+  and `CapabilityReason` only — the A–D letter is never rendered, and `HomePage` shows the one
+  aggregate derived from it.
+- Recorded two weaknesses in the security suite so a green row is not over-read:
+  `Denies_Alternate_Data_Stream` asserts `True` (it proves suffix stripping, the opposite of its name),
+  and `Denies_Junction_Pointing_To_Windows` `return`s without asserting if the junction was not created.
+  An earlier note here claimed that skip was "the normal outcome without Developer Mode or admin
+  rights" — measured 2026-11-08, that is wrong for **junctions**, which `mklink /J` creates from a child
+  process unprivileged. The test does run on this machine. "The security suite is a release gate" is
+  intent, not mechanism — nothing in the tree runs tests automatically.
+- `USER_GUIDE.md` told readers a failed verification means "You will not be left half-applied." The
+  rollback is not re-verified, so a throwing rollback leaves exactly that state; the guide now says so
+  and points at the "Rollback failed: …" status text. The same section claimed the confirmation dialog
+  gates the whole operation — `ImportWallpaper` and the backup write both run **before** `approve`, so
+  cancelling still leaves two files inside the AVEX data roots. Verification scope is now stated
+  honestly too: `AppearancePage.Matches` compares the wallpaper path only, never the style or tiling.
+- `BACKUP_AND_RECOVERY.md` §3's before/after table read like a guarantee about the machine. It is one
+  measurement of one scripted run; the section now says which, and records the actual current registry
+  value alongside it.
+- **`COMPATIBILITY.md` §6** recorded "unpackaged launch: Pass, confirmed by screenshot" on 2026-11-07.
+  That was the missing-runtime dialog. The row is retracted and replaced with the 2026-11-08 results.
+- Recorded two pipeline gaps that were previously implied to be closed: rollback after a failed apply
+  is **not** re-verified, and `RiskLevel` is recorded but never acts as an approval gate.
+- Recorded that `HKCU\Software\Classes` sits in the registry write allowlist with no consumer, which
+  conflicts with specification rule 22 (no file-association branding) — see
+  [THREAT_MODEL.md](../security/THREAT_MODEL.md) §4.
+
+### Verified end to end on this host
+
+`gui-cycle.ps1` against the live desktop, reading `HKCU\Control Panel\Desktop\Wallpaper` independently
+at each step: AVEX wallpaper → **Restore** → original image → **Apply** (approval dialog shown and
+accepted) → AVEX wallpaper → **Restore** → original image. The session ended with the desktop in its
+original state.
+
+**That is not where the host still is.** A later apply (`bk-20261108-032502-8af92aad`, "Apply AVEX
+wallpaper", 2026-11-08 03:25:02 UTC) is the newest snapshot, and re-reading the registry on
+2026-11-08 shows `Wallpaper` set to
+`%LOCALAPPDATA%\AVEXOS\wallpapers\avex-wallpaper.png`. The original path
+(`…\Microsoft.Windows.Photos_8wekyb3d8bbwe\LocalState\PhotosAppBackground\goku-perfected-3840x2160-25454.jpg`,
+1 010 751 bytes, style 10) is intact inside that snapshot and **Restore Original** returns to it; the
+restore was not run because it is a host write that needs approval. A verified table describes the run
+it was measured on, not the current state of the machine — see
+[BACKUP_AND_RECOVERY.md](../operations/BACKUP_AND_RECOVERY.md) §3.
+
+`dotnet build AVEXOS.slnx`, measured then: **0 errors, 10 warning lines** — 6 distinct (8 × `NU1903` for
+`SQLitePCLRaw.lib.e_sqlite3` 2.1.11 / [GHSA-2m69-gcr7-jv3q](https://github.com/advisories/GHSA-2m69-gcr7-jv3q),
+2 × `CS0168`). Tests then: **22 passed** — 14 `AVEXOS.Security.Tests`, 8 `AVEXOS.ThemeEngine.Tests`
+(now 23; the MSBuild warning total is an occurrence count — see [README.md](../../README.md)).
+
+### Toolchain finding worth repeating
+
+`dotnet build src\AVEXOS.App\AVEXOS.App.csproj` reports success but writes to
+`bin\Debug\…\win-x64\`, while `launch-app.cmd` runs from `bin\x64\Debug\…\win-x64\`. Several hours of
+"the fix does not work" went to running a stale binary. Build the solution. See
+[DEVELOPER_GUIDE.md](../setup/DEVELOPER_GUIDE.md) §2.
+
+---
+
+## 2026-11-07 — audit, architecture, scaffold, implementation
+
+### Decided
+
+- The master specification asks for taskbar, Start menu, Explorer, context-menu and third-party-app
+  restyling while forbidding binary patching, injection, undocumented techniques and any write to
+  `C:\Windows`. Within those rules that is not achievable, and the tools that claim it use exactly the
+  forbidden techniques. **Chosen scope: an honest capability matrix** — rebrand AVEX's own surfaces,
+  customize what Windows exposes at user scope, and mark everything else unsupported with a reason.
+- First vertical slice: **wallpaper** (Level B, reversible, verified by read-back).
+- `desktop.ini` permitted as a folder-identity mechanism, subject to the same guard rules. *(Still not
+  implemented.)*
+
+### Added
+
+- Solution `AVEXOS.slnx` with six projects — `Core`, `Security`, `WindowsIntegration`, `ThemeEngine`,
+  `Backup`, `App` — plus two test projects.
+- `ProtectedPathPolicy`: deny-by-default, evaluated on the canonical path after resolving junctions and
+  symlinks, stripping `\\?\` / `\\.\` prefixes and alternate-data-stream syntax, folding `..`, and
+  trimming trailing dots and spaces. Protected roots include `C:\Windows`, both Program Files,
+  `ProgramData\Microsoft`, `C:\Recovery`, `System Volume Information`, `$Recycle.Bin`, `Boot`, `EFI`
+  and any volume root. `FileSystemGuard` checks the parent directory separately.
+- `RegistryPolicy`: `HKLM` rejected outright; seven user-scope roots allowlisted (the seventh was
+  `HKCU\Software\Classes`, removed 2026-11-08 — see the top entry; six remain).
+- `ChangePipeline` as the only mutating entry point: guard → capture → backup → record → approve →
+  apply → read-back verify → audit, with automatic rollback on apply or verification failure.
+- `SqliteStore` (`AuditEvents`, `Operations`, `Settings`) in `%LOCALAPPDATA%\AVEXOS\avex.db`;
+  `JsonBackupStore` writing `bk-yyyyMMdd-HHmmss-<8>.json` snapshots under
+  `%LOCALAPPDATA%\AVEXOS\backups`.
+- `ThemeDocument` + `ThemeValidator` (id/version/hex-colour/range checks; a theme referencing a Level D
+  target is an error, not a warning) and `BuiltInThemeCatalog`, which embeds `assets/themes/*.json`.
+  Note: themes failing validation are dropped silently.
+- `LocalProposalService` — a deterministic keyword → token generator with **no model provider and no
+  network**, validating every output before returning it.
+- `AppDiscoveryService` reading the HKLM 64/32 and HKCU Uninstall trees, filtering updates and
+  `SystemComponent` entries, deduplicating, capping at 80; `CapabilityRegistry` grades each app A/B/C/D
+  with a reason string.
+- `WallpaperService`: `Read` via `SPI_GETDESKWALLPAPER` plus `WallpaperStyle`/`TileWallpaper`;
+  `Apply` guarded by `RegistryPolicy` then `SPI_SETDESKWALLPAPER` with
+  `SPIF_UPDATEINIFILE | SPIF_SENDCHANGE`; `ImportWallpaper` guarded copy into the AVEX data root.
+- WinUI 3 Control Center: Home, Appearance, Themes, Applications, Activity; `AvexTokens.xaml` with
+  Dark/Light theme dictionaries; light/dark switching inside the app window.
+- `assets/themes/avex-dark.json`, `avex-light.json`, `assets/wallpapers/avex-wallpaper.png`.
+- `ARCHITECTURE.md`, `SECURITY.md`, `COMPATIBILITY.md`, `DESIGN_SYSTEM.md` and the initial `README.md`.
+
+### Environment established
+
+Windows 11 build 26300.9711 (26H2 Insider), Core (Home), x64 · .NET SDK 10.0.403 user-scoped, not on
+`PATH` · runtime `Microsoft.NETCore.App` 10.0.14 · Windows App Runtime 2.6.5 · Windows SDK 10.0.26100
+· VS Build Tools 17.14.41 · **Developer Mode disabled**, so packaged launch is blocked and unpackaged
+is the supported loop.
+
+---
+
+## Unresolved
+
+Tracked so nobody has to rediscover it:
+
+| | Item |
+|---|---|
+| Security | **No handle-based re-check between guard and write** (T-T6 shape 2): `ImportWallpaper` copies with `overwrite: true` onto a predictable filename, so a link planted there *after* the decision still redirects it. The pre-check half was fixed 2026-11-08 — see the top entry — and mount points stay unhandled. [THREAT_MODEL.md](../security/THREAT_MODEL.md) §5 risk #4. |
+| Security | `SQLitePCLRaw.lib.e_sqlite3` 2.1.11 advisory GHSA-2m69-gcr7-jv3q, transitive via `Microsoft.Data.Sqlite` 10.0.0 — unresolved, and a reason not to ship. |
+| Security | `RegistryPolicy` matches roots with `StartsWith`, so a sibling key beginning with a root is approved (`…\Control Panel\DesktopEvil` → ALLOW, measured). Harmless while no sensitive HKCU key is a prefix-extension of a root. [THREAT_MODEL.md](../security/THREAT_MODEL.md) §5 risk #9. (`HKCU\Software\Classes` itself was removed from the list 2026-11-08 — see the top entry.) |
+| Correctness | Risk level does not gate anything. Rollback verification was added 2026-11-08 — the pipeline now accepts an optional `verifyRollback` delegate and marks the operation `Failed` if it returns false. The direction-neutral success text was fixed 2026-11-08 — "Applied and verified." is now "Verified." so a restore does not claim an apply. |
+| Coverage | No tests for `WallpaperService`, `AppDiscoveryService` or any UI. The 38 tests cover path policy, registry policy, backup integrity, theme validation and pipeline rollback verification. |
+| Scope | Only wallpaper ships. Shortcuts, folder/drive icons, cursors, sounds, system accent, adapters, plugins, installer, signing, packaging: designed, **not implemented**. File-type icons are further out: the hive they live in is refused by the guard (rule 22). |
+| Scope | Theme apply affects the AVEX window only. It does not restyle Windows, and must not be described as if it did. |
+| Scope | A theme's own `color`/`radius`/`space`/`type` values are validated but **never rendered** — `Apply` only flips `RequestedTheme` between Light and Dark, so palettes in the JSON are inert and same-mode themes are indistinguishable. Rendering tokens into a `ResourceDictionary` is the prerequisite for calling this a theme engine. |
+| Hygiene | Two `CS0168` unused-exception warnings where `ActivityPage` and `HomePage` swallow exceptions instead of surfacing them. |

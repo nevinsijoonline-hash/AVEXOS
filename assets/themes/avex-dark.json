@@ -1,0 +1,36 @@
+{
+  "id": "avex.dark",
+  "name": "AVEX Dark",
+  "version": "1.0.0",
+  "mode": "dark",
+  "category": "builtin",
+  "author": "AVEX OS",
+  "description": "Deep charcoal surfaces with a restrained graphite palette and a single cool accent.",
+  "fontFamily": "Segoe UI Variable",
+  "color": {
+    "bg.base": "#141517",
+    "bg.raised": "#191B1E",
+    "surface.1": "#1E2125",
+    "surface.2": "#24282D",
+    "border.subtle": "#2C3137",
+    "border.strong": "#3A4048",
+    "text.primary": "#ECEDEF",
+    "text.secondary": "#A2A9B4",
+    "text.tertiary": "#6E7681",
+    "accent": "#6E8BFF",
+    "accent.hover": "#8099FF",
+    "success": "#3FA96B",
+    "warning": "#D9A23A",
+    "danger": "#D9534F"
+  },
+  "radius": { "sm": 2, "md": 3, "lg": 5 },
+  "space": { "xs": 4, "sm": 8, "md": 12, "lg": 16, "xl": 24 },
+  "motion": { "fast": 130, "standard": 165 },
+  "type": { "display": 28, "h1": 20, "h2": 16, "h3": 14, "body": 13, "label": 12, "caption": 11, "mono": 12 },
+  "targets": {
+    "avex.controlcenter": { "level": "A" },
+    "windows.desktop.wallpaper": { "level": "B" },
+    "windows.system.theme-mode": { "level": "C" },
+    "windows.system.accent": { "level": "C" }
+  }
+}
