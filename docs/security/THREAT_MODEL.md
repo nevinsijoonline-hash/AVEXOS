@@ -166,7 +166,7 @@ the list.
 | 6 | No code signing or release integrity (T-S1) | Cannot distinguish real AVEX OS from an impostor | **Partially fixed 2026-11-08** — SHA256 checksum generation and verification scripts added (`scripts/generate-checksums.ps1`, `scripts/verify-checksums.ps1`). Checksums provide tamper detection but not publisher authentication. Full code signing requires a certificate from a trusted CA. See [RELEASE_PROCESS.md](../setup/RELEASE_PROCESS.md) for details. |
 | 7 | `SQLitePCLRaw.lib.e_sqlite3` 2.1.11 advisory GHSA-2m69-gcr7-jv3q | Third-party native lib with a known high-severity issue | Open, tracked in README |
 | 8 | Audit log is user-writable (T-R2) | Repudiation resistance is limited | Accepted by design (local-only tool) |
-| 9 | `RegistryPolicy` matches roots with `StartsWith`, so a sibling key beginning with a root name is approved (`…\Control Panel\DesktopEvil` → ALLOW, measured §4) | No sensitive HKCU location is a prefix-extension of an allowed root, so nothing reachable matters today. Becomes real if a root with security-relevant children is ever added | Open — fix with a segment-boundary comparison, not by shrinking the list |
+| 9 | `RegistryPolicy` matches roots with `StartsWith`, so a sibling key beginning with a root name is approved (`…\Control Panel\DesktopEvil` → ALLOW, measured §4) | No sensitive HKCU location is a prefix-extension of an allowed root, so nothing reachable matters today. Becomes real if a root with security-relevant children is ever added | **Fixed 2026-11-08** — `IsWritable` now uses segment-boundary comparison: exact match or prefix + backslash. Three `Denies_Prefix_Shadowing_Attempts` test cases pin the behaviour. |
 
 ## 6. Out of scope
 
