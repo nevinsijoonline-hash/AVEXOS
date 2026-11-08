@@ -9,7 +9,19 @@ by working date.
 
 ---
 
-## 2026-11-08 (latest) — release integrity verification (risk #6)
+## 2026-11-08 (latest) — UI structure verification tests
+
+### Added
+
+- **Static UI structure tests.** New `UiStructureTests` class in `AVEXOS.App.Tests` verifies XAML file existence, well-formedness, navigation consistency, and page class declarations without requiring a running UI thread. Tests cover: all 8 page XAML files exist with matching code-behind files, MainWindow.xaml has expected NavigationViewItems with icons and tags, all pages have correct x:Class declarations, App.xaml has ResourceDictionary, AvexTokens.xaml stylesheet exists and is well-formed, and all pages have Loaded event handlers. `AVEXOS.App.Tests` project added to solution file. **42 new tests** (94 total in AVEXOS.App.Tests).
+
+### Tests
+
+**305 tests total** (94 App + 15 Backup + 44 Core + 29 Security + 28 ThemeEngine + 95 WindowsIntegration + 1 skipped), 304 passing, 1 skipped (reparse point test requires admin privileges).
+
+---
+
+## 2026-11-08 — release integrity verification (risk #6)
 
 ### Added
 
@@ -597,7 +609,7 @@ Tracked so nobody has to rediscover it:
 | Security | **SQLitePCLRaw.lib.e_sqlite3 advisory GHSA-2m69-gcr7-jv3q** was fixed 2026-11-08 — `Microsoft.Data.Sqlite` updated from 10.0.0 to 10.0.14, pulling in `SQLitePCLRaw` 2.1.13 (from 2.1.11). CVE-2025-6965 (numeric truncation in SQLite aggregate handling) resolved. `dotnet list package --vulnerable` reports no vulnerable packages. |
 | Security | **RegistryPolicy prefix-shadowing** was fixed 2026-11-08 — `IsWritable` now uses segment-boundary comparison: exact match (`keyPath.Equals(root)`) or prefix + backslash (`keyPath.StartsWith(root + @"\")`), so `…\Control Panel\DesktopEvil` is denied. Three `Denies_Prefix_Shadowing_Attempts` test cases pin the behaviour. [THREAT_MODEL.md](../security/THREAT_MODEL.md) §5 risk #9. |
 | Correctness | Rollback verification was added 2026-11-08 — the pipeline now accepts an optional `verifyRollback` delegate and marks the operation `Failed` if it returns false. Risk level gating was added 2026-11-08 — High-risk changes now require a `confirmHighRisk` delegate. The direction-neutral success text was fixed 2026-11-08 — "Applied and verified." is now "Verified." so a restore does not claim an apply. |
-| Coverage | No tests for any UI. The 65 tests cover path policy, registry policy (including prefix-shadowing), backup integrity, theme validation, theme resource building, pipeline rollback verification, risk gating, WallpaperService.ImportWallpaper, and AppDiscoveryService.DiscoverAsync. |
+| Coverage | **UI structure tests added 2026-11-08** — `UiStructureTests` verifies XAML file existence, well-formedness, navigation consistency, and page class declarations (42 tests). The 305 tests now cover path policy, registry policy (including prefix-shadowing), backup integrity, theme validation, theme resource building, pipeline rollback verification, risk gating, WallpaperService.ImportWallpaper, AppDiscoveryService.DiscoverAsync, ThemeSchedulerService, ShortcutParser, and UI structure verification. Full UI automation (app launch, navigation, interaction) requires WinAppDriver or similar infrastructure not yet implemented. |
 | Scope | Only wallpaper ships. Shortcuts, folder/drive icons, cursors, sounds, system accent, adapters, plugins, installer, signing, packaging: designed, **not implemented**. File-type icons are further out: the hive they live in is refused by the guard (rule 22). |
 | Scope | Theme apply affects the AVEX window only. It does not restyle Windows, and must not be described as if it did. |
 | Hygiene | CS0168 unused-exception warnings fixed 2026-11-08 — catch blocks no longer declare unused `ex` variables. |

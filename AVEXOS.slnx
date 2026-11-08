@@ -10,6 +10,7 @@
     <Project Path="src/AVEXOS.WindowsIntegration/AVEXOS.WindowsIntegration.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/AVEXOS.App.Tests/AVEXOS.App.Tests.csproj" />
     <Project Path="tests/AVEXOS.Backup.Tests/AVEXOS.Backup.Tests.csproj" />
     <Project Path="tests/AVEXOS.Core.Tests/AVEXOS.Core.Tests.csproj" />
     <Project Path="tests/AVEXOS.Security.Tests/AVEXOS.Security.Tests.csproj" />
