@@ -42,7 +42,7 @@ public sealed partial class HomePage : Page
 
             ActivityList.ItemsSource = audit.Recent(20);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             // Log but don't crash
         }

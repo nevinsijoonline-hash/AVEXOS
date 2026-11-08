@@ -21,7 +21,7 @@ public sealed partial class ActivityPage : Page
             var audit = App.Services.GetRequiredService<IAuditLog>();
             ActivityList.ItemsSource = audit.Recent(100);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             // Log but don't crash
         }
