@@ -9,7 +9,15 @@ by working date.
 
 ---
 
-## 2026-11-08 (latest) — security fix: TOCTOU vulnerability in ImportWallpaper
+## 2026-11-08 (latest) — security fix: SQLitePCLRaw vulnerability CVE-2025-6965
+
+### Fixed
+
+- **SQLitePCLRaw upgraded to 2.1.13.** Updated `Microsoft.Data.Sqlite` from 10.0.0 to 10.0.14, which pulls in `SQLitePCLRaw.lib.e_sqlite3` 2.1.13 (from 2.1.11). This closes CVE-2025-6965 (GHSA-2m69-gcr7-jv3q), a high-severity numeric truncation error in SQLite that could lead to memory corruption when aggregate terms exceed available columns. CVSS v4 base score 7.2, EPSS 73.452%. Verified: `dotnet list package --vulnerable` now reports no vulnerable packages.
+
+---
+
+## 2026-11-08 — security fix: TOCTOU vulnerability in ImportWallpaper
 
 ### Fixed
 
@@ -560,7 +568,7 @@ Tracked so nobody has to rediscover it:
 | | Item |
 |---|---|
 | Security | **Handle-based re-check for reparse points** was fixed 2026-11-08 — `ImportWallpaper` now checks `FileAttributes.ReparsePoint` after the guard decision but before the copy, throwing `UnauthorizedAccessException` if a symlink or junction is detected. This closes T-T6 shape 2 for file symlinks. Mount points and device-level reparse points stay unhandled. [THREAT_MODEL.md](../security/THREAT_MODEL.md) §5 risk #4. |
-| Security | `SQLitePCLRaw.lib.e_sqlite3` 2.1.11 advisory GHSA-2m69-gcr7-jv3q, transitive via `Microsoft.Data.Sqlite` 10.0.0 — unresolved, and a reason not to ship. |
+| Security | **SQLitePCLRaw.lib.e_sqlite3 advisory GHSA-2m69-gcr7-jv3q** was fixed 2026-11-08 — `Microsoft.Data.Sqlite` updated from 10.0.0 to 10.0.14, pulling in `SQLitePCLRaw` 2.1.13 (from 2.1.11). CVE-2025-6965 (numeric truncation in SQLite aggregate handling) resolved. `dotnet list package --vulnerable` reports no vulnerable packages. |
 | Security | `RegistryPolicy` prefix-shadowing was fixed 2026-11-08 — `IsWritable` now requires exact root match or root+backslash prefix, so `…\Control Panel\DesktopEvil` is denied. [THREAT_MODEL.md](../security/THREAT_MODEL.md) §5 risk #9. (`HKCU\Software\Classes` itself was removed from the list 2026-11-08 — see the top entry.) |
 | Correctness | Rollback verification was added 2026-11-08 — the pipeline now accepts an optional `verifyRollback` delegate and marks the operation `Failed` if it returns false. Risk level gating was added 2026-11-08 — High-risk changes now require a `confirmHighRisk` delegate. The direction-neutral success text was fixed 2026-11-08 — "Applied and verified." is now "Verified." so a restore does not claim an apply. |
 | Coverage | No tests for any UI. The 65 tests cover path policy, registry policy (including prefix-shadowing), backup integrity, theme validation, theme resource building, pipeline rollback verification, risk gating, WallpaperService.ImportWallpaper, and AppDiscoveryService.DiscoverAsync. |
