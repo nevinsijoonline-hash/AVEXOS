@@ -81,6 +81,34 @@ public partial class App : Application
 
         // Initialize the system tray icon
         InitialiseTrayIcon(window);
+
+        // Apply default wallpaper if none is set
+        InitialiseWallpaper();
+    }
+
+    private static void InitialiseWallpaper()
+    {
+        try
+        {
+            var wallpaper = Services.GetRequiredService<IWallpaperService>();
+            var current = wallpaper.Read();
+            
+            // If no wallpaper is set or it's a blank/empty path, apply the default
+            if (string.IsNullOrWhiteSpace(current.WallpaperPath) || !File.Exists(current.WallpaperPath))
+            {
+                var defaultWallpaper = Path.Combine(AvexPaths.WallpaperDir, "avex-logo-wallpaper.png");
+                if (File.Exists(defaultWallpaper))
+                {
+                    Trace($"Applying default wallpaper: {defaultWallpaper}");
+                    var newState = new AppearanceState(defaultWallpaper, 10, false); // 10 = Fit
+                    wallpaper.ApplyToAllMonitors(newState);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Trace($"Wallpaper initialization failed: {ex.Message}");
+        }
     }
 
     private static void InitialiseTrayIcon(MainWindow window)
