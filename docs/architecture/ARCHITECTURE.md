@@ -439,7 +439,7 @@ turns `color`/`radius`/`space`/`type` values into brushes or setters.** Two them
 
 ## 11. Testing
 
-**[built]** — six xUnit projects, 178 tests total (22 + 28 + 15 + 32 + 29 + 52), green on 2026-11-08 with
+**[built]** — six xUnit projects, 262 tests total (44 + 28 + 15 + 94 + 29 + 52), green on 2026-11-08 with
 `dotnet test AVEXOS.slnx`:
 
 | Suite | File | Covers |
@@ -461,8 +461,12 @@ turns `color`/`radius`/`space`/`type` values into brushes or setters.** Two them
 | `AVEXOS.Backup.Tests` | [SettingsBackupServiceTests.cs](../../tests/AVEXOS.Backup.Tests/SettingsBackupServiceTests.cs) | 11 cases: file creation/naming, JSON format, read/restore round-trip, tamper detection, missing file handling, listing order, deletion, retention cap at 10, empty settings, duplicate timestamps |
 | `AVEXOS.Core.Tests` | [SystemInfoServiceTests.cs](../../tests/AVEXOS.Core.Tests/SystemInfoServiceTests.cs) | 16 cases: Windows version, .NET version, app version, theme ID/mode defaults and stored values, session duration, machine/user name, processor count, memory, wallpaper path defaults and slideshow paths |
 | `AVEXOS.WindowsIntegration.Tests` | [AppDiscoveryServiceTests.cs](../../tests/AVEXOS.WindowsIntegration.Tests/AppDiscoveryServiceTests.cs) | 5 cases: returns results, required fields present, limited to 80, sorted by DisplayName, respects cancellation |
+| `AVEXOS.Core.Tests` | [WorkspaceProfileServiceTests.cs](../../tests/AVEXOS.Core.Tests/WorkspaceProfileServiceTests.cs) | 22 cases: CRUD operations, apply wallpaper/theme, set-default, validation, JSON persistence round-trip |
+| `AVEXOS.WindowsIntegration.Tests` | [FocusModeServiceTests.cs](../../tests/AVEXOS.WindowsIntegration.Tests/FocusModeServiceTests.cs) | 19 cases: config persistence, enable/disable lifecycle, wallpaper save/restore, idempotency, single-monitor edge case, DimNonPrimary flag, validation clamping |
+| `AVEXOS.WindowsIntegration.Tests` | [PresentationModeServiceTests.cs](../../tests/AVEXOS.WindowsIntegration.Tests/PresentationModeServiceTests.cs) | 19 methods (26 cases): config defaults/persistence, enable/disable, blank secondary/all monitors, BMP generation, hex color parsing |
+| `AVEXOS.WindowsIntegration.Tests` | [AutoBrightnessServiceTests.cs](../../tests/AVEXOS.WindowsIntegration.Tests/AutoBrightnessServiceTests.cs) | 17 cases: config persistence, enable/disable, brightness calculation (day/night/transition), clamping, tick behavior, disposal |
 
-No integration, compatibility, UI or performance suite exists. `SqliteStore` and `ThemeService` (WinUI wiring) have **zero automated coverage** — the wallpaper read/backup/apply/verify/restore cycle is verified by hand with [`gui-cycle.ps1`](../../scripts/gui-cycle.ps1), and the theme picker by [`theme-probe.ps1`](../../scripts/theme-probe.ps1). `ThemeResourceBuilder`, `UserThemeService`, `ThemeSchedulerService`, `ShortcutParser`, `SettingsBackupService`, `SystemInfoService`, `MonitorDetection`, `MonitorSlideshowService`, and multi-monitor `WallpaperService` methods are covered by 136 unit tests.
+No integration, compatibility, UI or performance suite exists. `SqliteStore` and `ThemeService` (WinUI wiring) have **zero automated coverage** — the wallpaper read/backup/apply/verify/restore cycle is verified by hand with [`gui-cycle.ps1`](../../scripts/gui-cycle.ps1), and the theme picker by [`theme-probe.ps1`](../../scripts/theme-probe.ps1). `ThemeResourceBuilder`, `UserThemeService`, `ThemeSchedulerService`, `ShortcutParser`, `SettingsBackupService`, `SystemInfoService`, `MonitorDetection`, `MonitorSlideshowService`, multi-monitor `WallpaperService`, `WorkspaceProfileService`, `FocusModeService`, `PresentationModeService`, and `AutoBrightnessService` are covered by 221 unit tests.
 
 Two weaknesses in the security suite, so nobody reads a green row as more than it is:
 

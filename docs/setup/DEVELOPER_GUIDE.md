@@ -41,7 +41,7 @@ dotnet test tests\AVEXOS.Security.Tests\AVEXOS.Security.Tests.csproj --no-build
 dotnet test tests\AVEXOS.ThemeEngine.Tests\AVEXOS.ThemeEngine.Tests.csproj --no-build
 ```
 
-Verified on this host: **0 errors, 6 distinct warnings; 178 tests pass (22 + 28 + 15 + 32 + 29 + 52)**. MSBuild's headline
+Verified on this host: **0 errors, 6 distinct warnings; 262 tests pass (44 + 28 + 15 + 94 + 29 + 52)**. MSBuild's headline
 warning total is an occurrence count and reads 10 incremental / 12 with `-t:Rebuild` — see the README.
 
 ### Build the solution, never a single csproj

@@ -9,7 +9,29 @@ by working date.
 
 ---
 
-## 2026-11-08 (latest) — major feature expansion: 10 new capabilities
+## 2026-11-08 (latest) — 4 productivity features: workspace profiles, focus/presentation modes, auto-brightness
+
+### Added
+
+- **Workspace profiles.** `WorkspaceProfileService` saves complete setups (wallpaper + theme + mode) as JSON files in `AvexPaths.ProfilesDir`. Supports create, apply, delete, set-default. Apply calls `IWallpaperService.ApplyToAllMonitors()` and `IThemeService.Apply()`. New `WorkspaceProfilesPage` in navigation with profile cards, create form, and set-default toggle. **22 tests** covering CRUD, apply, validation, persistence round-trip.
+
+- **Focus mode.** `FocusModeService` dims non-primary monitors by generating solid-color BMP overlays. Config persisted in `ISettingsStore` (dim level 0-100%, solid color hex, blur options). Saves original wallpaper state before dimming, restores on disable. UI card in QuickActionsPage with toggle, dim slider, color picker, blur checkbox. Keyboard shortcut: Ctrl+Shift+F. **19 tests** covering enable/disable lifecycle, wallpaper save/restore, idempotency, validation.
+
+- **Presentation mode.** `PresentationModeService` blanks secondary monitors (or all if configured) with solid color. Generates 1x1 pixel BMP via raw byte writing (no System.Drawing dependency). Per-monitor control via `IWallpaperService.ApplyToMonitor()`. Saves/restores original wallpapers. UI card in QuickActionsPage with color picker and "include primary" checkbox. Keyboard shortcut: Ctrl+Shift+P. System tray tooltip updates when active. **19 tests (26 cases)** covering config, enable/disable, BMP generation, hex parsing.
+
+- **Auto-brightness.** `AutoBrightnessService` adjusts screen brightness based on time of day. Uses WMI (`WmiMonitorBrightnessMethods`) primary, dxva2.dll DDC/CI fallback for external monitors. Timer checks every minute, linear interpolation during transitions. Config: day/night brightness (0-100), start times, transition duration. UI in SettingsPage with sliders, time pickers, preview button. Graceful failure on desktops without brightness support. **17 tests** covering config persistence, brightness calculation, tick behavior, disposal.
+
+### Tests
+
+**262 tests total** (52 App + 15 Backup + 44 Core + 29 Security + 28 ThemeEngine + 94 WindowsIntegration), all passing. Added 85 new tests across 4 features.
+
+### Documentation
+
+[ARCHITECTURE.md](../architecture/ARCHITECTURE.md) §11 (test count to 262, new test rows), [README.md](../../README.md) (test count), [DEVELOPER_GUIDE.md](../setup/DEVELOPER_GUIDE.md) (test count).
+
+---
+
+## 2026-11-08 — major feature expansion: 10 new capabilities
 
 ### Added
 
