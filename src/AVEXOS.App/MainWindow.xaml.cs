@@ -26,6 +26,7 @@ public sealed partial class MainWindow : Window
                 "Applications" => typeof(ApplicationsPage),
                 "Activity" => typeof(ActivityPage),
                 "QuickActions" => typeof(QuickActionsPage),
+                "WorkspaceProfiles" => typeof(WorkspaceProfilesPage),
                 "Settings" => typeof(SettingsPage),
                 _ => typeof(HomePage)
             };

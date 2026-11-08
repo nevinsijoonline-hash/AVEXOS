@@ -159,6 +159,171 @@
                            Foreground="{ThemeResource AvexTextTertiaryBrush}" />
             </StackPanel>
 
+            <!-- Auto-Brightness Section -->
+            <StackPanel Spacing="{StaticResource AvexSpaceXs}">
+                <StackPanel Orientation="Horizontal" Spacing="{StaticResource AvexSpaceSm}">
+                    <FontIcon Glyph="&#xE706;" FontSize="20"
+                              Foreground="{ThemeResource AvexAccentBrush}" />
+                    <TextBlock Text="Auto-Brightness" FontSize="{StaticResource AvexTypeH3}" FontWeight="SemiBold"
+                               Foreground="{ThemeResource AvexTextPrimaryBrush}" />
+                </StackPanel>
+                <TextBlock Text="Automatically adjust screen brightness based on time of day to reduce eye strain"
+                           FontSize="{StaticResource AvexTypeBody}"
+                           Foreground="{ThemeResource AvexTextTertiaryBrush}" />
+            </StackPanel>
+
+            <Border Background="{ThemeResource AvexSurface1Brush}"
+                    BorderBrush="{ThemeResource AvexBorderSubtleBrush}"
+                    BorderThickness="1"
+                    CornerRadius="{StaticResource AvexCardCornerRadius}"
+                    Padding="{StaticResource AvexPaddingLg}">
+                <StackPanel Spacing="{StaticResource AvexSpaceMd}">
+
+                    <!-- Enable/Disable Toggle -->
+                    <Grid ColumnSpacing="{StaticResource AvexSpaceSm}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
+                            <TextBlock Text="Enable Auto-Brightness"
+                                       FontSize="{StaticResource AvexTypeBodyLg}" FontWeight="SemiBold"
+                                       Foreground="{ThemeResource AvexTextPrimaryBrush}" />
+                            <TextBlock Text="Adjust brightness automatically based on time of day"
+                                       FontSize="{StaticResource AvexTypeBody}"
+                                       Foreground="{ThemeResource AvexTextSecondaryBrush}" />
+                        </StackPanel>
+                        <ToggleSwitch x:Name="AutoBrightnessToggle" Grid.Column="1"
+                                      VerticalAlignment="Center" Toggled="AutoBrightnessToggle_Toggled" />
+                    </Grid>
+
+                    <Border Height="1" Background="{ThemeResource AvexBorderSubtleBrush}" />
+
+                    <!-- Day Brightness -->
+                    <Grid ColumnSpacing="{StaticResource AvexSpaceSm}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="160" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Day Brightness" VerticalAlignment="Center"
+                                   FontSize="{StaticResource AvexTypeBodyLg}" FontWeight="SemiBold"
+                                   Foreground="{ThemeResource AvexTextPrimaryBrush}" />
+                        <Slider x:Name="DayBrightnessSlider" Grid.Column="1" Minimum="0" Maximum="100"
+                                Value="80" VerticalAlignment="Center"
+                                ValueChanged="DayBrightnessSlider_ValueChanged" />
+                        <TextBlock x:Name="DayBrightnessValue" Grid.Column="2" Text="80%"
+                                   VerticalAlignment="Center" Width="48" TextAlignment="Right"
+                                   FontSize="{StaticResource AvexTypeBody}"
+                                   Foreground="{ThemeResource AvexTextSecondaryBrush}" />
+                    </Grid>
+
+                    <!-- Night Brightness -->
+                    <Grid ColumnSpacing="{StaticResource AvexSpaceSm}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="160" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Night Brightness" VerticalAlignment="Center"
+                                   FontSize="{StaticResource AvexTypeBodyLg}" FontWeight="SemiBold"
+                                   Foreground="{ThemeResource AvexTextPrimaryBrush}" />
+                        <Slider x:Name="NightBrightnessSlider" Grid.Column="1" Minimum="0" Maximum="100"
+                                Value="30" VerticalAlignment="Center"
+                                ValueChanged="NightBrightnessSlider_ValueChanged" />
+                        <TextBlock x:Name="NightBrightnessValue" Grid.Column="2" Text="30%"
+                                   VerticalAlignment="Center" Width="48" TextAlignment="Right"
+                                   FontSize="{StaticResource AvexTypeBody}"
+                                   Foreground="{ThemeResource AvexTextSecondaryBrush}" />
+                    </Grid>
+
+                    <Border Height="1" Background="{ThemeResource AvexBorderSubtleBrush}" />
+
+                    <!-- Day Start Time -->
+                    <Grid ColumnSpacing="{StaticResource AvexSpaceSm}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="160" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Day Start Time" VerticalAlignment="Center"
+                                   FontSize="{StaticResource AvexTypeBodyLg}" FontWeight="SemiBold"
+                                   Foreground="{ThemeResource AvexTextPrimaryBrush}" />
+                        <TimePicker x:Name="DayStartTimePicker" Grid.Column="1"
+                                    ClockIdentifier="24HourClock"
+                                    SelectedTime="07:00:00"
+                                    SelectedTimeChanged="DayStartTimePicker_SelectedTimeChanged" />
+                    </Grid>
+
+                    <!-- Night Start Time -->
+                    <Grid ColumnSpacing="{StaticResource AvexSpaceSm}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="160" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Night Start Time" VerticalAlignment="Center"
+                                   FontSize="{StaticResource AvexTypeBodyLg}" FontWeight="SemiBold"
+                                   Foreground="{ThemeResource AvexTextPrimaryBrush}" />
+                        <TimePicker x:Name="NightStartTimePicker" Grid.Column="1"
+                                    ClockIdentifier="24HourClock"
+                                    SelectedTime="19:00:00"
+                                    SelectedTimeChanged="NightStartTimePicker_SelectedTimeChanged" />
+                    </Grid>
+
+                    <Border Height="1" Background="{ThemeResource AvexBorderSubtleBrush}" />
+
+                    <!-- Transition Duration -->
+                    <Grid ColumnSpacing="{StaticResource AvexSpaceSm}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="160" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Transition Duration" VerticalAlignment="Center"
+                                   FontSize="{StaticResource AvexTypeBodyLg}" FontWeight="SemiBold"
+                                   Foreground="{ThemeResource AvexTextPrimaryBrush}" />
+                        <Slider x:Name="TransitionSlider" Grid.Column="1" Minimum="0" Maximum="60"
+                                Value="30" VerticalAlignment="Center"
+                                ValueChanged="TransitionSlider_ValueChanged" />
+                        <TextBlock x:Name="TransitionValue" Grid.Column="2" Text="30 min"
+                                   VerticalAlignment="Center" Width="64" TextAlignment="Right"
+                                   FontSize="{StaticResource AvexTypeBody}"
+                                   Foreground="{ThemeResource AvexTextSecondaryBrush}" />
+                    </Grid>
+
+                    <Border Height="1" Background="{ThemeResource AvexBorderSubtleBrush}" />
+
+                    <!-- Current Brightness & Preview -->
+                    <Grid ColumnSpacing="{StaticResource AvexSpaceSm}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
+                            <TextBlock FontSize="{StaticResource AvexTypeBodyLg}" FontWeight="SemiBold"
+                                       Foreground="{ThemeResource AvexTextPrimaryBrush}">
+                                <Run Text="Current Brightness: " />
+                                <Run x:Name="CurrentBrightnessRun" Text="--" />
+                            </TextBlock>
+                            <TextBlock Text="Brightness control requires laptop hardware or DDC/CI-capable monitor"
+                                       FontSize="{StaticResource AvexTypeCaption}"
+                                       Foreground="{ThemeResource AvexTextTertiaryBrush}" />
+                        </StackPanel>
+                        <Button x:Name="PreviewBrightnessBtn" Grid.Column="1" Content="Preview"
+                                VerticalAlignment="Center" Click="PreviewBrightness_Click" />
+                        <Button x:Name="ApplyBrightnessBtn" Grid.Column="2" Content="Apply Now"
+                                VerticalAlignment="Center" Click="ApplyNow_Click"
+                                Style="{StaticResource AccentButtonStyle}" />
+                    </Grid>
+
+                    <!-- Status -->
+                    <TextBlock x:Name="AutoBrightnessStatus" Text=""
+                               FontSize="{StaticResource AvexTypeBody}"
+                               Foreground="{ThemeResource AvexTextSecondaryBrush}" />
+
+                </StackPanel>
+            </Border>
+
             <Border Background="{ThemeResource AvexSurface1Brush}"
                     BorderBrush="{ThemeResource AvexBorderSubtleBrush}"
                     BorderThickness="1"

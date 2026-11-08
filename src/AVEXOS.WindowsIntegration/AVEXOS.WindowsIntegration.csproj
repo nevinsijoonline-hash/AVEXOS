@@ -9,4 +9,10 @@
     <ProjectReference Include="..\AVEXOS.Core\AVEXOS.Core.csproj" />
     <ProjectReference Include="..\AVEXOS.Security\AVEXOS.Security.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="AVEXOS.WindowsIntegration.Tests" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Management" Version="9.0.0" />
+  </ItemGroup>
 </Project>

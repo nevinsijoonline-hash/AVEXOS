@@ -5,6 +5,7 @@ using Xunit;
 
 namespace AVEXOS.Backup.Tests;
 
+[Collection("BackupTests")]
 public class JsonBackupStoreTests : IDisposable
 {
     private readonly string _testDir;

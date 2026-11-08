@@ -1,0 +1,58 @@
+<Page
+    x:Class="AVEXOS.App.WorkspaceProfilesPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer Padding="{StaticResource AvexPaddingLg}">
+        <StackPanel Spacing="{StaticResource AvexSpaceLg}">
+
+            <!-- Page Header -->
+            <StackPanel Orientation="Horizontal" Spacing="{StaticResource AvexSpaceMd}">
+                <Image Source="ms-appx:///assets/avex-logo.jpeg" Width="48" Height="48" />
+                <StackPanel VerticalAlignment="Center" Spacing="2">
+                    <TextBlock Text="Workspace Profiles" FontSize="{StaticResource AvexTypeH2}" FontWeight="SemiBold"
+                               Foreground="{ThemeResource AvexTextPrimaryBrush}" />
+                    <TextBlock Text="Save and switch between complete workspace setups" FontSize="{StaticResource AvexTypeBody}"
+                               Foreground="{ThemeResource AvexTextSecondaryBrush}" />
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Create New Profile -->
+            <Border Background="{ThemeResource AvexSurface1Brush}"
+                    BorderBrush="{ThemeResource AvexBorderSubtleBrush}"
+                    BorderThickness="1"
+                    CornerRadius="{StaticResource AvexCardCornerRadius}"
+                    Padding="{StaticResource AvexPaddingLg}">
+                <StackPanel Spacing="{StaticResource AvexSpaceMd}">
+                    <TextBlock Text="Create New Profile" FontSize="{StaticResource AvexTypeH3}" FontWeight="SemiBold"
+                               Foreground="{ThemeResource AvexTextPrimaryBrush}" />
+                    <TextBlock Text="Captures the current wallpaper, theme, and mode as a new profile preset."
+                               FontSize="{StaticResource AvexTypeBody}"
+                               Foreground="{ThemeResource AvexTextTertiaryBrush}" TextWrapping="Wrap" />
+                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource AvexSpaceSm}">
+                        <TextBox x:Name="NewProfileName" PlaceholderText="Profile name (e.g. Work, Gaming, Creative)" Width="320" />
+                        <Button x:Name="CreateButton" Content="Create from Current State" Click="CreateButton_Click"
+                                Style="{StaticResource AccentButtonStyle}" />
+                    </StackPanel>
+                    <TextBlock x:Name="CreateStatus" Text="" FontSize="{StaticResource AvexTypeBody}"
+                               Foreground="{ThemeResource AvexTextSecondaryBrush}" TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+            <!-- Saved Profiles List -->
+            <StackPanel Spacing="{StaticResource AvexSpaceSm}">
+                <TextBlock Text="Saved Profiles" FontSize="{StaticResource AvexTypeH3}" FontWeight="SemiBold"
+                           Foreground="{ThemeResource AvexTextPrimaryBrush}" />
+                <TextBlock Text="Click Apply to activate a profile, or manage your saved presets below."
+                           FontSize="{StaticResource AvexTypeBody}"
+                           Foreground="{ThemeResource AvexTextTertiaryBrush}" />
+            </StackPanel>
+
+            <!-- Profile Cards (populated in code-behind) -->
+            <StackPanel x:Name="ProfileCardsPanel" Spacing="8" />
+
+            <TextBlock x:Name="ListStatus" Text="" FontSize="{StaticResource AvexTypeBody}"
+                       Foreground="{ThemeResource AvexTextSecondaryBrush}" TextWrapping="Wrap" />
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>

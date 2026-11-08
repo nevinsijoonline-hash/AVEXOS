@@ -8,7 +8,7 @@ using Windows.UI;
 
 namespace AVEXOS.App;
 
-public sealed class ThemeService
+public sealed class ThemeService : IThemeService
 {
     private readonly ISettingsStore _settings;
     private readonly IThemeCatalog _catalog;

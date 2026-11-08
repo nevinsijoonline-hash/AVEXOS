@@ -92,4 +92,60 @@ internal static partial class NativeMethods
     [ComImport]
     [Guid("C2CF3110-460E-4fc1-B9D0-8A1C0C9CC4BD")]
     public class DesktopWallpaper { }
+
+    // ---- Brightness control via WMI (root/WMI : WmiMonitorBrightnessMethods) ----
+    // We invoke WMI through ManagementClass rather than P/Invoke for brightness,
+    // but we expose SetMonitorBrightness from dxva2.dll as a fallback for laptops.
+
+    [DllImport("dxva2.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool SetMonitorBrightness(IntPtr hMonitor, uint dwBrightness);
+
+    [DllImport("dxva2.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool GetMonitorBrightness(IntPtr hMonitor, out uint pdwMinimumBrightness, out uint pdwCurrentBrightness, out uint pdwMaximumBrightness);
+
+    // Physical monitor struct for GetNumberOfPhysicalMonitorsFromHMONITOR
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct PHYSICAL_MONITOR
+    {
+        public IntPtr hPhysicalMonitor;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+        public string szPhysicalMonitorDescription;
+    }
+
+    [DllImport("dxva2.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool GetNumberOfPhysicalMonitorsFromHMONITOR(IntPtr hMonitor, out uint pdwNumberOfPhysicalMonitors);
+
+    [DllImport("dxva2.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool GetPhysicalMonitorsFromHMONITOR(IntPtr hMonitor, uint dwPhysicalMonitorArraySize, [Out] PHYSICAL_MONITOR[] pPhysicalMonitorArray);
+
+    [DllImport("dxva2.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool DestroyPhysicalMonitors(uint dwPhysicalMonitorArraySize, PHYSICAL_MONITOR[] pPhysicalMonitorArray);
+
+    // ---- Helper to get primary monitor handle for brightness control ----
+    private delegate bool MonitorEnumDelegate(IntPtr hMonitor, IntPtr hdcMonitor, ref RECT lprcMonitor, IntPtr dwData);
+
+    internal static IntPtr GetPrimaryMonitorHandle()
+    {
+        IntPtr primaryHandle = IntPtr.Zero;
+        EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero, (IntPtr hMon, IntPtr hdc, ref RECT rect, IntPtr data) =>
+        {
+            var info = new MONITORINFOEX();
+            info.cbSize = Marshal.SizeOf<MONITORINFOEX>();
+            if (GetMonitorInfo(hMon, ref info))
+            {
+                if ((info.dwFlags & MONITORINFOF_PRIMARY) != 0)
+                {
+                    primaryHandle = hMon;
+                    return false;
+                }
+            }
+            return true;
+        }, IntPtr.Zero);
+        return primaryHandle;
+    }
 }

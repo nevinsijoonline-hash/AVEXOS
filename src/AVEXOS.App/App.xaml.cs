@@ -60,13 +60,26 @@ public partial class App : Application
         services.AddSingleton<LocalProposalService>();
         services.AddSingleton<ChangePipeline>();
         services.AddSingleton<ThemeService>();
+        services.AddSingleton<IThemeService>(sp => sp.GetRequiredService<ThemeService>());
+        services.AddSingleton<IWorkspaceProfileService, WorkspaceProfileService>();
         services.AddSingleton<ThemeSchedulerService>();
         services.AddSingleton<KeyboardShortcutService>();
         services.AddSingleton<SystemInfoService>();
+        services.AddSingleton<IPresentationModeService, PresentationModeService>();
+        services.AddSingleton<IFocusModeService, FocusModeService>();
+        services.AddSingleton<IAutoBrightnessService>(sp =>
+            new AutoBrightnessService(
+                sp.GetRequiredService<ISettingsStore>(),
+                sp.GetRequiredService<IClock>()));
         Services = services.BuildServiceProvider();
 
         // Start the theme scheduler
         Services.GetRequiredService<ThemeSchedulerService>().Start();
+
+        // Start auto-brightness if enabled
+        var autoBrightness = Services.GetRequiredService<IAutoBrightnessService>();
+        if (autoBrightness.IsEnabled)
+            autoBrightness.Start();
     }
 
     protected override void OnLaunched(LaunchActivatedEventArgs args)
@@ -139,7 +152,30 @@ public partial class App : Application
                 window.Close();
                 Environment.Exit(0);
             },
-            getCurrentThemeMode: () => themeService.CurrentMode
+            getCurrentThemeMode: () => themeService.CurrentMode,
+            onTogglePresentationMode: () =>
+            {
+                try
+                {
+                    var presService = Services.GetRequiredService<IPresentationModeService>();
+                    if (presService.IsEnabled)
+                    {
+                        presService.Disable();
+                        _trayIcon?.UpdatePresentationModeState(false);
+                        Trace("Presentation mode disabled via tray menu");
+                    }
+                    else
+                    {
+                        presService.Enable();
+                        _trayIcon?.UpdatePresentationModeState(true);
+                        Trace("Presentation mode enabled via tray menu");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Trace($"Toggle presentation mode from tray failed: {ex.Message}");
+                }
+            }
         );
 
         _trayIcon.Initialize();
@@ -175,6 +211,54 @@ public partial class App : Application
 
         // Open AVEX control panel (window is already activated by the service)
         shortcuts.NavigateToSettings = () => window.NavigateToSettings();
+
+        // Toggle presentation mode
+        shortcuts.TogglePresentationModeAction = () =>
+        {
+            try
+            {
+                var presService = Services.GetRequiredService<IPresentationModeService>();
+                if (presService.IsEnabled)
+                {
+                    presService.Disable();
+                    _trayIcon?.UpdatePresentationModeState(false);
+                    Trace("Presentation mode disabled via shortcut");
+                }
+                else
+                {
+                    presService.Enable();
+                    _trayIcon?.UpdatePresentationModeState(true);
+                    Trace("Presentation mode enabled via shortcut");
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace($"Toggle presentation mode failed: {ex.Message}");
+            }
+        };
+
+        // Toggle focus mode
+        shortcuts.ToggleFocusModeAction = () =>
+        {
+            try
+            {
+                var focusService = Services.GetRequiredService<IFocusModeService>();
+                if (focusService.IsEnabled)
+                {
+                    focusService.Disable();
+                    Trace("Focus mode disabled via shortcut");
+                }
+                else
+                {
+                    focusService.Enable();
+                    Trace("Focus mode enabled via shortcut");
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace($"Toggle focus mode failed: {ex.Message}");
+            }
+        };
 
         shortcuts.Start();
     }

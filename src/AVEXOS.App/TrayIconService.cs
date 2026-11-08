@@ -14,6 +14,7 @@ public sealed class TrayIconService : IDisposable
 {
     // ── Win32 constants ──────────────────────────────────────────────
     private const uint NIM_ADD        = 0x00000000;
+    private const uint NIM_MODIFY     = 0x00000001;
     private const uint NIM_DELETE     = 0x00000002;
     private const uint NIM_SETVERSION = 0x00000004;
 
@@ -53,6 +54,7 @@ public sealed class TrayIconService : IDisposable
     private const int CMD_NEXT_WALLPAPER = 1004;
     private const int CMD_SETTINGS       = 1005;
     private const int CMD_EXIT           = 1006;
+    private const int CMD_PRESENTATION   = 1007;
 
     // ── P/Invoke: structs ────────────────────────────────────────────
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
@@ -188,6 +190,7 @@ public sealed class TrayIconService : IDisposable
     private readonly Action _onNextWallpaper;
     private readonly Action _onSettings;
     private readonly Action _onExit;
+    private readonly Action? _onTogglePresentationMode;
     private readonly Func<string> _getCurrentThemeMode;
 
     private IntPtr _hiddenHwnd;
@@ -195,6 +198,7 @@ public sealed class TrayIconService : IDisposable
     private readonly uint _iconId = 1;
     private bool _disposed;
     private bool _iconCreated;
+    private bool _presentationModeActive;
     private WndProcDelegate? _wndProc;
     private Thread? _messageThread;
 
@@ -205,7 +209,8 @@ public sealed class TrayIconService : IDisposable
         Action onNextWallpaper,
         Action onSettings,
         Action onExit,
-        Func<string> getCurrentThemeMode)
+        Func<string> getCurrentThemeMode,
+        Action? onTogglePresentationMode = null)
     {
         _dispatcher = dispatcher;
         _onOpen = onOpen;
@@ -214,6 +219,30 @@ public sealed class TrayIconService : IDisposable
         _onSettings = onSettings;
         _onExit = onExit;
         _getCurrentThemeMode = getCurrentThemeMode;
+        _onTogglePresentationMode = onTogglePresentationMode;
+    }
+
+    /// <summary>
+    /// Updates the tray icon tooltip and internal state to reflect presentation mode.
+    /// </summary>
+    public void UpdatePresentationModeState(bool isActive)
+    {
+        _presentationModeActive = isActive;
+        UpdateTrayTooltip(isActive ? "Presentation Mode Active" : "AVEX OS Control Panel");
+    }
+
+    private void UpdateTrayTooltip(string tooltip)
+    {
+        if (!_iconCreated || _hiddenHwnd == IntPtr.Zero) return;
+        var nid = new NOTIFYICONDATAW
+        {
+            cbSize = (uint)Marshal.SizeOf<NOTIFYICONDATAW>(),
+            hWnd = _hiddenHwnd,
+            uID = _iconId,
+            uFlags = NIF_TIP,
+            szTip = tooltip
+        };
+        Shell_NotifyIconW(NIM_MODIFY, ref nid);
     }
 
     /// <summary>
@@ -358,6 +387,8 @@ public sealed class TrayIconService : IDisposable
 
         AppendMenuW(hMenu, MF_SEPARATOR, IntPtr.Zero, null);
         AppendMenuW(hMenu, MF_STRING, (IntPtr)CMD_NEXT_WALLPAPER, "Next Wallpaper");
+        var presLabel = _presentationModeActive ? "Disable Presentation Mode" : "Enable Presentation Mode";
+        AppendMenuW(hMenu, MF_STRING | (_presentationModeActive ? MF_CHECKED : 0), (IntPtr)CMD_PRESENTATION, presLabel);
         AppendMenuW(hMenu, MF_STRING, (IntPtr)CMD_SETTINGS, "Settings");
         AppendMenuW(hMenu, MF_SEPARATOR, IntPtr.Zero, null);
         AppendMenuW(hMenu, MF_STRING, (IntPtr)CMD_EXIT, "Exit");
@@ -392,6 +423,9 @@ public sealed class TrayIconService : IDisposable
                 break;
             case CMD_SETTINGS:
                 _dispatcher.TryEnqueue(() => _onSettings());
+                break;
+            case CMD_PRESENTATION:
+                _dispatcher.TryEnqueue(() => _onTogglePresentationMode?.Invoke());
                 break;
             case CMD_EXIT:
                 _dispatcher.TryEnqueue(() => _onExit());

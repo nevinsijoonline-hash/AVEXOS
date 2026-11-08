@@ -88,3 +88,74 @@ public sealed class SystemClock : IClock
 {
     public DateTimeOffset UtcNow => DateTimeOffset.UtcNow;
 }
+
+public interface IPresentationModeService
+{
+    /// <summary>Gets the current presentation mode configuration.</summary>
+    PresentationModeConfig GetConfig();
+
+    /// <summary>Persists the given configuration.</summary>
+    void SaveConfig(PresentationModeConfig config);
+
+    /// <summary>Enables presentation mode: saves wallpaper state and blanks monitors.</summary>
+    void Enable();
+
+    /// <summary>Disables presentation mode: restores original wallpapers.</summary>
+    void Disable();
+
+    /// <summary>Whether presentation mode is currently active.</summary>
+    bool IsEnabled { get; }
+}
+
+public interface IFocusModeService
+{
+    /// <summary>Gets the current focus mode configuration.</summary>
+    FocusModeConfig GetConfig();
+
+    /// <summary>Persists the given configuration.</summary>
+    void SaveConfig(FocusModeConfig config);
+
+    /// <summary>Enables focus mode: saves wallpaper state and dims non-primary monitors.</summary>
+    void Enable();
+
+    /// <summary>Disables focus mode: restores original wallpapers.</summary>
+    void Disable();
+
+    /// <summary>Whether focus mode is currently active.</summary>
+    bool IsEnabled { get; }
+}
+
+public interface IAutoBrightnessService : IDisposable
+{
+    AutoBrightnessConfig GetConfig();
+    void SaveConfig(AutoBrightnessConfig config);
+    void Enable();
+    void Disable();
+    bool IsEnabled { get; }
+    int GetCurrentBrightness();
+    void ApplyBrightness(int level);
+    /// <summary>Calculate target brightness for the given time based on config.</summary>
+    int CalculateBrightness(DateTimeOffset localTime);
+    void Start();
+    void Stop();
+}
+
+public interface IWorkspaceProfileService
+{
+    IReadOnlyList<WorkspaceProfile> GetAll();
+    WorkspaceProfile? Get(string id);
+    void Save(WorkspaceProfile profile);
+    void Delete(string id);
+    void Apply(string id);
+    void SetDefault(string id);
+}
+
+/// <summary>
+/// Abstraction for applying themes. Implemented by ThemeService in AVEXOS.App.
+/// </summary>
+public interface IThemeService
+{
+    void Apply(string themeId, string mode);
+    string CurrentThemeId { get; }
+    string CurrentMode { get; }
+}

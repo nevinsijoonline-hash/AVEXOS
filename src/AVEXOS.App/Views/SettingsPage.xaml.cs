@@ -17,6 +17,8 @@ public sealed partial class SettingsPage : Page
     private KeyboardShortcutService? _shortcutService;
     private SettingsBackupService? _backupService;
     private ThemeService? _themeService;
+    private IAutoBrightnessService? _autoBrightnessService;
+    private bool _suppressAutoSave;
 
     public SettingsPage()
     {
@@ -29,8 +31,10 @@ public sealed partial class SettingsPage : Page
         _shortcutService = App.Services.GetService<KeyboardShortcutService>();
         _backupService = App.Services.GetService<SettingsBackupService>();
         _themeService = App.Services.GetService<ThemeService>();
+        _autoBrightnessService = App.Services.GetService<IAutoBrightnessService>();
         RefreshDisplay();
         RefreshBackupList();
+        RefreshAutoBrightnessUI();
         await Task.CompletedTask;
     }
 
@@ -535,6 +539,118 @@ public sealed partial class SettingsPage : Page
         if (bytes < 1024) return $"{bytes} B";
         if (bytes < 1024 * 1024) return $"{bytes / 1024.0:F1} KB";
         return $"{bytes / (1024.0 * 1024.0):F1} MB";
+    }
+
+    // ---- Auto-Brightness UI ------------------------------------------------
+
+    private void RefreshAutoBrightnessUI()
+    {
+        if (_autoBrightnessService is null) return;
+
+        _suppressAutoSave = true;
+        var config = _autoBrightnessService.GetConfig();
+
+        AutoBrightnessToggle.IsOn = config.IsEnabled;
+        DayBrightnessSlider.Value = config.DayBrightness;
+        NightBrightnessSlider.Value = config.NightBrightness;
+        DayBrightnessValue.Text = $"{config.DayBrightness}%";
+        NightBrightnessValue.Text = $"{config.NightBrightness}%";
+        TransitionSlider.Value = config.TransitionMinutes;
+        TransitionValue.Text = $"{config.TransitionMinutes} min";
+
+        DayStartTimePicker.SelectedTime = config.DayStartTime;
+        NightStartTimePicker.SelectedTime = config.NightStartTime;
+
+        var current = _autoBrightnessService.GetCurrentBrightness();
+        CurrentBrightnessRun.Text = current >= 0 ? $"{current}%" : "--";
+
+        _suppressAutoSave = false;
+    }
+
+    private void AutoBrightnessToggle_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (_autoBrightnessService is null || _suppressAutoSave) return;
+
+        if (AutoBrightnessToggle.IsOn)
+            _autoBrightnessService.Enable();
+        else
+            _autoBrightnessService.Disable();
+
+        AutoBrightnessStatus.Text = AutoBrightnessToggle.IsOn
+            ? "Auto-brightness enabled."
+            : "Auto-brightness disabled.";
+    }
+
+    private void SaveCurrentConfig()
+    {
+        if (_autoBrightnessService is null || _suppressAutoSave) return;
+
+        var config = _autoBrightnessService.GetConfig();
+        config.DayBrightness = (int)DayBrightnessSlider.Value;
+        config.NightBrightness = (int)NightBrightnessSlider.Value;
+        config.TransitionMinutes = (int)TransitionSlider.Value;
+        if (DayStartTimePicker.SelectedTime is TimeSpan dayTime)
+            config.DayStartTime = dayTime;
+        if (NightStartTimePicker.SelectedTime is TimeSpan nightTime)
+            config.NightStartTime = nightTime;
+        config.IsEnabled = AutoBrightnessToggle.IsOn;
+
+        _autoBrightnessService.SaveConfig(config);
+    }
+
+    private void DayBrightnessSlider_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    {
+        if (_suppressAutoSave) return;
+        DayBrightnessValue.Text = $"{(int)e.NewValue}%";
+        SaveCurrentConfig();
+    }
+
+    private void NightBrightnessSlider_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    {
+        if (_suppressAutoSave) return;
+        NightBrightnessValue.Text = $"{(int)e.NewValue}%";
+        SaveCurrentConfig();
+    }
+
+    private void TransitionSlider_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    {
+        if (_suppressAutoSave) return;
+        TransitionValue.Text = $"{(int)e.NewValue} min";
+        SaveCurrentConfig();
+    }
+
+    private void DayStartTimePicker_SelectedTimeChanged(object sender, TimePickerSelectedValueChangedEventArgs e)
+    {
+        SaveCurrentConfig();
+    }
+
+    private void NightStartTimePicker_SelectedTimeChanged(object sender, TimePickerSelectedValueChangedEventArgs e)
+    {
+        SaveCurrentConfig();
+    }
+
+    private void PreviewBrightness_Click(object sender, RoutedEventArgs e)
+    {
+        if (_autoBrightnessService is null) return;
+
+        // Calculate what brightness would be right now using the service
+        var now = DateTimeOffset.Now;
+        var target = _autoBrightnessService.CalculateBrightness(now);
+        _autoBrightnessService.ApplyBrightness(target);
+        CurrentBrightnessRun.Text = $"{target}%";
+        AutoBrightnessStatus.Text = $"Preview: applied {target}% brightness.";
+    }
+
+    private void ApplyNow_Click(object sender, RoutedEventArgs e)
+    {
+        if (_autoBrightnessService is null) return;
+
+        SaveCurrentConfig();
+        var now = DateTimeOffset.Now;
+        var target = _autoBrightnessService.CalculateBrightness(now);
+        _autoBrightnessService.ApplyBrightness(target);
+        CurrentBrightnessRun.Text = $"{target}%";
+        AutoBrightnessStatus.Text = $"Applied {target}% brightness.";
     }
 }
 

@@ -9,6 +9,7 @@ public static class AvexPaths
     private static string? _backupDirOverride;
     private static string? _wallpaperDirOverride;
     private static string? _themeDirOverride;
+    private static string? _profilesDirOverride;
 
     public static string Root { get; } = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AVEXOS");
@@ -22,11 +23,12 @@ public static class AvexPaths
     public static string ThemeDir => _themeDirOverride ?? Path.Combine(Root, "themes");
     public static string UserThemeDir => Path.Combine(ThemeDir, "user");
     public static string WallpaperDir => _wallpaperDirOverride ?? Path.Combine(Root, "wallpapers");
+    public static string ProfilesDir => _profilesDirOverride ?? Path.Combine(Root, "profiles");
     public static string DatabasePath => Path.Combine(Root, "avex.db");
 
     public static void EnsureCreated()
     {
-        foreach (var dir in new[] { Root, RoamingRoot, BackupDir, LogDir, CacheDir, ThemeDir, UserThemeDir, WallpaperDir })
+        foreach (var dir in new[] { Root, RoamingRoot, BackupDir, LogDir, CacheDir, ThemeDir, UserThemeDir, WallpaperDir, ProfilesDir })
         {
             Directory.CreateDirectory(dir);
         }
@@ -48,5 +50,11 @@ public static class AvexPaths
     public static void OverrideThemeDirForTests(string path)
     {
         _themeDirOverride = path;
+    }
+
+    /// <summary>Test-only: override the profiles directory. Do not call from production code.</summary>
+    public static void OverrideProfilesDirForTests(string path)
+    {
+        _profilesDirOverride = path;
     }
 }

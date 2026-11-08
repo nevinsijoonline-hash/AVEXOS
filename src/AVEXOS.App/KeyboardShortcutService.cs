@@ -49,6 +49,12 @@ public sealed class KeyboardShortcutService : IDisposable
     /// <summary>Set by the app layer to advance the wallpaper.</summary>
     public Action? NextWallpaperAction { get; set; }
 
+    /// <summary>Set by the app layer to toggle presentation mode.</summary>
+    public Action? TogglePresentationModeAction { get; set; }
+
+    /// <summary>Set by the app layer to toggle focus mode.</summary>
+    public Action? ToggleFocusModeAction { get; set; }
+
     // ---- construction ----------------------------------------------------
 
     public KeyboardShortcutService(ISettingsStore settings)
@@ -311,6 +317,12 @@ public sealed class KeyboardShortcutService : IDisposable
                     break;
                 case HotkeyAction.OpenSettings:
                     NavigateToSettings?.Invoke();
+                    break;
+                case HotkeyAction.TogglePresentationMode:
+                    TogglePresentationModeAction?.Invoke();
+                    break;
+                case HotkeyAction.ToggleFocusMode:
+                    ToggleFocusModeAction?.Invoke();
                     break;
             }
         }

@@ -92,18 +92,6 @@ file class AllowAllGuard : IFileSystemGuard
     public GuardResult EnsureDirectory(string path) => new(true, path, "Allowed");
 }
 
-internal class InMemorySettings : ISettingsStore
-{
-    private readonly Dictionary<string, string> _data = new();
-    public string? Get(string key) => _data.TryGetValue(key, out var value) ? value : null;
-    public void Set(string key, string value) => _data[key] = value;
-    public void SetMany(IReadOnlyDictionary<string, string> values)
-    {
-        foreach (var kvp in values) _data[kvp.Key] = kvp.Value;
-    }
-    public void Delete(string key) => _data.Remove(key);
-    public IReadOnlyDictionary<string, string> GetAll() => _data;
-}
 
 file class DenyAllGuard : IFileSystemGuard
 {

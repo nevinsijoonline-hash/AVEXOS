@@ -72,6 +72,75 @@
                 </StackPanel>
             </Border>
 
+            <!-- Presentation Mode -->
+            <Border Background="{ThemeResource AvexSurface1Brush}"
+                    BorderBrush="{ThemeResource AvexBorderSubtleBrush}"
+                    BorderThickness="1"
+                    CornerRadius="{StaticResource AvexCardCornerRadius}"
+                    Padding="{StaticResource AvexPaddingLg}">
+                <StackPanel Spacing="{StaticResource AvexSpaceSm}">
+                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource AvexSpaceSm}">
+                        <TextBlock Text="Presentation Mode" FontSize="{StaticResource AvexTypeH3}" FontWeight="SemiBold"
+                                   Foreground="{ThemeResource AvexTextPrimaryBrush}" />
+                        <TextBlock x:Name="PresentationStatusBadge" Text="" FontSize="{StaticResource AvexTypeBody}"
+                                   VerticalAlignment="Center"
+                                   Foreground="{ThemeResource AvexTextSecondaryBrush}" />
+                    </StackPanel>
+                    <TextBlock Text="Blank secondary monitors with a solid color (Ctrl+Shift+P)" FontSize="{StaticResource AvexTypeBody}"
+                               Foreground="{ThemeResource AvexTextTertiaryBrush}" />
+                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource AvexSpaceMd}" Margin="0,8,0,0">
+                        <ToggleButton x:Name="PresentationModeToggle" Content="Enable" Click="PresentationModeToggle_Click"
+                                      MinWidth="120" />
+                        <TextBox x:Name="BlankColorInput" PlaceholderText="#000000" Width="100"
+                                 Text="#000000" />
+                        <CheckBox x:Name="IncludePrimaryCheck" Content="Include primary monitor" />
+                    </StackPanel>
+                    <TextBlock x:Name="PresentationStatusText" Text="" FontSize="{StaticResource AvexTypeBody}"
+                               Foreground="{ThemeResource AvexTextSecondaryBrush}" />
+                </StackPanel>
+            </Border>
+
+            <!-- Focus Mode -->
+            <Border Background="{ThemeResource AvexSurface1Brush}"
+                    BorderBrush="{ThemeResource AvexBorderSubtleBrush}"
+                    BorderThickness="1"
+                    CornerRadius="{StaticResource AvexCardCornerRadius}"
+                    Padding="{StaticResource AvexPaddingLg}">
+                <StackPanel Spacing="{StaticResource AvexSpaceSm}">
+                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource AvexSpaceSm}">
+                        <TextBlock Text="Focus Mode" FontSize="{StaticResource AvexTypeH3}" FontWeight="SemiBold"
+                                   Foreground="{ThemeResource AvexTextPrimaryBrush}" />
+                        <TextBlock x:Name="FocusModeStatusBadge" Text="" FontSize="{StaticResource AvexTypeBody}"
+                                   VerticalAlignment="Center"
+                                   Foreground="{ThemeResource AvexTextSecondaryBrush}" />
+                    </StackPanel>
+                    <TextBlock Text="Dim non-primary monitors to reduce distractions (Ctrl+Shift+F)" FontSize="{StaticResource AvexTypeBody}"
+                               Foreground="{ThemeResource AvexTextTertiaryBrush}" />
+                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource AvexSpaceMd}" Margin="0,8,0,0">
+                        <ToggleButton x:Name="FocusModeToggle" Content="Enable" Click="FocusModeToggle_Click"
+                                      MinWidth="120" />
+                    </StackPanel>
+                    <StackPanel Spacing="{StaticResource AvexSpaceSm}" Margin="0,4,0,0">
+                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource AvexSpaceSm}">
+                            <TextBlock Text="Dim Level:" VerticalAlignment="Center"
+                                       Foreground="{ThemeResource AvexTextPrimaryBrush}" />
+                            <Slider x:Name="DimLevelSlider" Minimum="0" Maximum="100" Value="50" Width="200"
+                                    VerticalAlignment="Center" />
+                            <TextBlock x:Name="DimLevelValue" Text="50%" VerticalAlignment="Center"
+                                       Foreground="{ThemeResource AvexTextSecondaryBrush}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource AvexSpaceMd}">
+                            <CheckBox x:Name="UseSolidColorCheck" Content="Use solid color instead of dim" />
+                            <TextBox x:Name="SolidColorInput" PlaceholderText="#000000" Width="100"
+                                     Text="#000000" />
+                        </StackPanel>
+                        <CheckBox x:Name="BlurWallpaperCheck" Content="Blur wallpaper on secondary monitors" />
+                    </StackPanel>
+                    <TextBlock x:Name="FocusModeStatusText" Text="" FontSize="{StaticResource AvexTypeBody}"
+                               Foreground="{ThemeResource AvexTextSecondaryBrush}" />
+                </StackPanel>
+            </Border>
+
             <!-- Cache and Logs -->
             <Border Background="{ThemeResource AvexSurface1Brush}"
                     BorderBrush="{ThemeResource AvexBorderSubtleBrush}"

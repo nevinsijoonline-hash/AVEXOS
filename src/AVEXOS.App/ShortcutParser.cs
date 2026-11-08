@@ -8,7 +8,9 @@ public enum HotkeyAction
     ToggleTheme,
     NextWallpaper,
     OpenPanel,
-    OpenSettings
+    OpenSettings,
+    TogglePresentationMode,
+    ToggleFocusMode
 }
 
 /// <summary>
@@ -21,10 +23,12 @@ public static class ShortcutParser
 
     public static Dictionary<HotkeyAction, string> GetDefaults() => new()
     {
-        [HotkeyAction.ToggleTheme]   = "Ctrl+Shift+T",
-        [HotkeyAction.NextWallpaper] = "Ctrl+Shift+W",
-        [HotkeyAction.OpenPanel]     = "Ctrl+Shift+A",
-        [HotkeyAction.OpenSettings]  = "Ctrl+Shift+S",
+        [HotkeyAction.ToggleTheme]             = "Ctrl+Shift+T",
+        [HotkeyAction.NextWallpaper]           = "Ctrl+Shift+W",
+        [HotkeyAction.OpenPanel]               = "Ctrl+Shift+A",
+        [HotkeyAction.OpenSettings]            = "Ctrl+Shift+S",
+        [HotkeyAction.TogglePresentationMode]  = "Ctrl+Shift+P",
+        [HotkeyAction.ToggleFocusMode]         = "Ctrl+Shift+F",
     };
 
     // ---- parsing ---------------------------------------------------------
@@ -173,8 +177,10 @@ public static class ShortcutParser
     private const byte VK_F4        = 0x73;
     private const byte VK_D         = 0x44;
     private const byte VK_E         = 0x45;
+    private const byte VK_F         = 0x46;
     private const byte VK_I         = 0x49;
     private const byte VK_L         = 0x4C;
+    private const byte VK_P         = 0x50;
     private const byte VK_R         = 0x52;
     private const byte VK_T         = 0x54;
     private const byte VK_W         = 0x57;

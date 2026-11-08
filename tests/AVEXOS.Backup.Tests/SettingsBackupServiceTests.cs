@@ -4,6 +4,7 @@ using Xunit;
 
 namespace AVEXOS.Backup.Tests;
 
+[Collection("BackupTests")]
 public class SettingsBackupServiceTests : IDisposable
 {
     private readonly string _testDir;

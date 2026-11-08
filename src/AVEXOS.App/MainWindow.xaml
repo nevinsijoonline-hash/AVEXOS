@@ -33,6 +33,9 @@
                 <NavigationViewItem Content="Quick Actions" Tag="QuickActions">
                     <NavigationViewItem.Icon><FontIcon Glyph="&#xE7B8;" /></NavigationViewItem.Icon>
                 </NavigationViewItem>
+                <NavigationViewItem Content="Workspace Profiles" Tag="WorkspaceProfiles">
+                    <NavigationViewItem.Icon><FontIcon Glyph="&#xE748;" /></NavigationViewItem.Icon>
+                </NavigationViewItem>
             </NavigationView.MenuItems>
             <NavigationView.FooterMenuItems>
                 <NavigationViewItem Content="Settings" Tag="Settings">
