@@ -1,0 +1,261 @@
+<Page
+    x:Class="AVEXOS.App.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer Padding="{StaticResource AvexSpaceLg}">
+        <StackPanel Spacing="{StaticResource AvexSpaceLg}">
+
+            <!-- Page Header -->
+            <StackPanel Orientation="Horizontal" Spacing="{StaticResource AvexSpaceMd}">
+                <FontIcon Glyph="&#xE713;" FontSize="40"
+                          Foreground="{ThemeResource AvexAccentBrush}" />
+                <StackPanel VerticalAlignment="Center" Spacing="2">
+                    <TextBlock Text="Settings" FontSize="{StaticResource AvexTypeH2}" FontWeight="SemiBold"
+                               Foreground="{ThemeResource AvexTextPrimaryBrush}" />
+                    <TextBlock Text="Configure application preferences and keyboard shortcuts"
+                               FontSize="{StaticResource AvexTypeBody}"
+                               Foreground="{ThemeResource AvexTextSecondaryBrush}" />
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Keyboard Shortcuts Section -->
+            <StackPanel Spacing="{StaticResource AvexSpaceSm}">
+                <TextBlock Text="Keyboard Shortcuts" FontSize="{StaticResource AvexTypeH3}" FontWeight="SemiBold"
+                           Foreground="{ThemeResource AvexTextPrimaryBrush}" />
+                <TextBlock Text="Customise global hotkeys that work even when AVEX OS is in the background"
+                           FontSize="{StaticResource AvexTypeBody}"
+                           Foreground="{ThemeResource AvexTextTertiaryBrush}" />
+            </StackPanel>
+
+            <Border Background="{ThemeResource AvexSurface1Brush}"
+                    BorderBrush="{ThemeResource AvexBorderSubtleBrush}"
+                    BorderThickness="1"
+                    CornerRadius="{StaticResource AvexCardCornerRadius}"
+                    Padding="{StaticResource AvexSpaceLg}">
+                <StackPanel Spacing="{StaticResource AvexSpaceMd}">
+
+                    <!-- Toggle Theme -->
+                    <Grid ColumnSpacing="{StaticResource AvexSpaceSm}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
+                            <TextBlock Text="Toggle Dark / Light Mode"
+                                       FontSize="{StaticResource AvexTypeBodyLg}" FontWeight="SemiBold"
+                                       Foreground="{ThemeResource AvexTextPrimaryBrush}" />
+                            <TextBlock Text="Switch between dark and light appearance"
+                                       FontSize="{StaticResource AvexTypeBody}"
+                                       Foreground="{ThemeResource AvexTextSecondaryBrush}" />
+                        </StackPanel>
+                        <Button x:Name="ToggleThemeBtn" Grid.Column="1" MinWidth="160"
+                                HorizontalAlignment="Right" VerticalAlignment="Center"
+                                Click="ChangeShortcut_Click" Tag="ToggleTheme">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <FontIcon Glyph="&#xE92E;" FontSize="14" />
+                                <TextBlock x:Name="ToggleThemeShortcut" Text="Ctrl+Shift+T" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+
+                    <Border Height="1" Background="{ThemeResource AvexBorderSubtleBrush}" />
+
+                    <!-- Next Wallpaper -->
+                    <Grid ColumnSpacing="{StaticResource AvexSpaceSm}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
+                            <TextBlock Text="Next Wallpaper"
+                                       FontSize="{StaticResource AvexTypeBodyLg}" FontWeight="SemiBold"
+                                       Foreground="{ThemeResource AvexTextPrimaryBrush}" />
+                            <TextBlock Text="Cycle to the next desktop wallpaper"
+                                       FontSize="{StaticResource AvexTypeBody}"
+                                       Foreground="{ThemeResource AvexTextSecondaryBrush}" />
+                        </StackPanel>
+                        <Button x:Name="NextWallpaperBtn" Grid.Column="1" MinWidth="160"
+                                HorizontalAlignment="Right" VerticalAlignment="Center"
+                                Click="ChangeShortcut_Click" Tag="NextWallpaper">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <FontIcon Glyph="&#xE91B;" FontSize="14" />
+                                <TextBlock x:Name="NextWallpaperShortcut" Text="Ctrl+Shift+W" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+
+                    <Border Height="1" Background="{ThemeResource AvexBorderSubtleBrush}" />
+
+                    <!-- Open AVEX Panel -->
+                    <Grid ColumnSpacing="{StaticResource AvexSpaceSm}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
+                            <TextBlock Text="Open AVEX Control Panel"
+                                       FontSize="{StaticResource AvexTypeBodyLg}" FontWeight="SemiBold"
+                                       Foreground="{ThemeResource AvexTextPrimaryBrush}" />
+                            <TextBlock Text="Bring the AVEX OS window to the foreground"
+                                       FontSize="{StaticResource AvexTypeBody}"
+                                       Foreground="{ThemeResource AvexTextSecondaryBrush}" />
+                        </StackPanel>
+                        <Button x:Name="OpenPanelBtn" Grid.Column="1" MinWidth="160"
+                                HorizontalAlignment="Right" VerticalAlignment="Center"
+                                Click="ChangeShortcut_Click" Tag="OpenPanel">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <FontIcon Glyph="&#xE770;" FontSize="14" />
+                                <TextBlock x:Name="OpenPanelShortcut" Text="Ctrl+Shift+A" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+
+                    <Border Height="1" Background="{ThemeResource AvexBorderSubtleBrush}" />
+
+                    <!-- Open Settings -->
+                    <Grid ColumnSpacing="{StaticResource AvexSpaceSm}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
+                            <TextBlock Text="Open Settings"
+                                       FontSize="{StaticResource AvexTypeBodyLg}" FontWeight="SemiBold"
+                                       Foreground="{ThemeResource AvexTextPrimaryBrush}" />
+                            <TextBlock Text="Jump directly to this settings page"
+                                       FontSize="{StaticResource AvexTypeBody}"
+                                       Foreground="{ThemeResource AvexTextSecondaryBrush}" />
+                        </StackPanel>
+                        <Button x:Name="OpenSettingsBtn" Grid.Column="1" MinWidth="160"
+                                HorizontalAlignment="Right" VerticalAlignment="Center"
+                                Click="ChangeShortcut_Click" Tag="OpenSettings">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <FontIcon Glyph="&#xE713;" FontSize="14" />
+                                <TextBlock x:Name="OpenSettingsShortcut" Text="Ctrl+Shift+S" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+
+                    <!-- Separator -->
+                    <Border Height="1" Background="{ThemeResource AvexBorderSubtleBrush}" Margin="0,4" />
+
+                    <!-- Reset button -->
+                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource AvexSpaceSm}">
+                        <Button Content="Reset to Defaults" Click="ResetButton_Click" />
+                        <TextBlock x:Name="StatusText" Text="" VerticalAlignment="Center"
+                                   FontSize="{StaticResource AvexTypeBody}"
+                                   Foreground="{ThemeResource AvexTextSecondaryBrush}" />
+                    </StackPanel>
+
+                </StackPanel>
+            </Border>
+
+            <!-- Settings Backup & Restore Section -->
+            <StackPanel Spacing="{StaticResource AvexSpaceXs}">
+                <TextBlock Text="Settings Backup &amp; Restore" FontSize="{StaticResource AvexTypeH3}" FontWeight="SemiBold"
+                           Foreground="{ThemeResource AvexTextPrimaryBrush}" />
+                <TextBlock Text="Back up your configuration to a file or restore from a previous backup"
+                           FontSize="{StaticResource AvexTypeBody}"
+                           Foreground="{ThemeResource AvexTextTertiaryBrush}" />
+            </StackPanel>
+
+            <Border Background="{ThemeResource AvexSurface1Brush}"
+                    BorderBrush="{ThemeResource AvexBorderSubtleBrush}"
+                    BorderThickness="1"
+                    CornerRadius="{StaticResource AvexCardCornerRadius}"
+                    Padding="{StaticResource AvexSpaceLg}">
+                <StackPanel Spacing="{StaticResource AvexSpaceMd}">
+
+                    <!-- Backup actions -->
+                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource AvexSpaceSm}">
+                        <Button x:Name="BackupButton" Click="BackupButton_Click"
+                                Style="{StaticResource AccentButtonStyle}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <FontIcon Glyph="&#xE74E;" FontSize="16" />
+                                <TextBlock Text="Backup Settings" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="RestoreFromFileButton" Click="RestoreFromFileButton_Click">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <FontIcon Glyph="&#xE7B3;" FontSize="16" />
+                                <TextBlock Text="Restore from File..." VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- Backup status -->
+                    <TextBlock x:Name="BackupStatusText" Text="" FontSize="{StaticResource AvexTypeBody}"
+                               Foreground="{ThemeResource AvexTextSecondaryBrush}" TextWrapping="Wrap" />
+
+                    <!-- Separator -->
+                    <Border Height="1" Background="{ThemeResource AvexBorderSubtleBrush}" Margin="0,4" />
+
+                    <!-- Backup history header -->
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="Backup History" FontSize="{StaticResource AvexTypeBodyLg}" FontWeight="SemiBold"
+                                   Foreground="{ThemeResource AvexTextPrimaryBrush}" />
+                        <TextBlock x:Name="HistorySubtitle" Text="No backups yet"
+                                   FontSize="{StaticResource AvexTypeCaption}"
+                                   Foreground="{ThemeResource AvexTextTertiaryBrush}" />
+                    </StackPanel>
+
+                    <!-- Empty state -->
+                    <TextBlock x:Name="EmptyStateText" Text="No backups found. Create your first backup above."
+                               FontSize="{StaticResource AvexTypeBody}"
+                               Foreground="{ThemeResource AvexTextTertiaryBrush}"
+                               HorizontalAlignment="Center" Padding="0,16" Visibility="Collapsed" />
+
+                    <!-- Backup list -->
+                    <ListView x:Name="BackupList" SelectionMode="None" MaxHeight="400">
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="Padding" Value="8,6" />
+                                <Setter Property="Margin" Value="0,0,0,2" />
+                                <Setter Property="CornerRadius" Value="4" />
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnSpacing="8" Padding="4,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0" Spacing="1" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding FileName}" FontSize="{StaticResource AvexTypeBodyLg}"
+                                                   FontWeight="SemiBold" Foreground="{ThemeResource AvexTextPrimaryBrush}" />
+                                        <TextBlock FontSize="{StaticResource AvexTypeCaption}"
+                                                   Foreground="{ThemeResource AvexTextSecondaryBrush}">
+                                            <Run Text="{Binding CreatedUtc}" />
+                                            <Run Text=" &#x2022; " />
+                                            <Run Text="{Binding SettingCount}" /><Run Text=" settings" />
+                                            <Run Text=" &#x2022; " />
+                                            <Run Text="{Binding FileSizeDisplay}" />
+                                        </TextBlock>
+                                    </StackPanel>
+
+                                    <Button Grid.Column="1" Content="Restore" Tag="{Binding FilePath}"
+                                            Click="RestoreBackup_Click" VerticalAlignment="Center"
+                                            Style="{StaticResource AccentButtonStyle}" />
+                                    <Button Grid.Column="2" Content="Preview" Tag="{Binding FilePath}"
+                                            Click="PreviewBackup_Click" VerticalAlignment="Center" />
+                                    <Button Grid.Column="3" Tag="{Binding FilePath}"
+                                            Click="DeleteBackup_Click" VerticalAlignment="Center"
+                                            ToolTipService.ToolTip="Delete this backup">
+                                        <FontIcon Glyph="&#xE74D;" FontSize="14" />
+                                    </Button>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>

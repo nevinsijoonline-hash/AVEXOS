@@ -30,6 +30,37 @@ public enum ChangeState
 
 public sealed record AppearanceState(string WallpaperPath, int WallpaperStyle, bool TileWallpaper);
 
+/// <summary>
+/// Represents a detected display monitor.
+/// </summary>
+public sealed record MonitorInfo(
+    string DeviceId,
+    string DisplayName,
+    int Width,
+    int Height,
+    int Left,
+    int Top,
+    bool IsPrimary);
+
+/// <summary>
+/// Per-monitor wallpaper state including the monitor and its assigned wallpaper.
+/// </summary>
+public sealed record MonitorWallpaperState(
+    MonitorInfo Monitor,
+    string WallpaperPath,
+    int WallpaperStyle,
+    bool TileWallpaper);
+
+/// <summary>
+/// Slideshow configuration for a specific monitor.
+/// </summary>
+public sealed record MonitorSlideshowConfig(
+    string MonitorDeviceId,
+    IReadOnlyList<string> Paths,
+    int IntervalMinutes,
+    int CurrentIndex,
+    bool Enabled);
+
 public sealed record DiscoveredApplication(
     string Id,
     string DisplayName,

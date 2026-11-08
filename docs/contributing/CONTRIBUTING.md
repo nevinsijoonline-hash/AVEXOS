@@ -53,7 +53,7 @@ dotnet test tests\AVEXOS.Security.Tests\AVEXOS.Security.Tests.csproj --no-build
 dotnet test tests\AVEXOS.ThemeEngine.Tests\AVEXOS.ThemeEngine.Tests.csproj --no-build
 ```
 
-Green baseline on 2026-11-08: **0 errors, 6 distinct warnings, 65 tests passing (29 + 6 + 18 + 3 + 9)**.
+Green baseline on 2026-11-08: **0 errors, 6 distinct warnings, 178 tests passing (22 + 28 + 15 + 32 + 29 + 52)**.
 
 - **The security suite is a release gate.** A failing `ProtectedPathPolicyTests` or
   `RegistryPolicyTests` case blocks the change, full stop. Those 24 cases are the reason the guard means

@@ -439,7 +439,7 @@ turns `color`/`radius`/`space`/`type` values into brushes or setters.** Two them
 
 ## 11. Testing
 
-**[built]** — five xUnit projects, 65 tests total (29 + 6 + 18 + 3 + 9), green on 2026-11-08 with
+**[built]** — six xUnit projects, 178 tests total (22 + 28 + 15 + 32 + 29 + 52), green on 2026-11-08 with
 `dotnet test AVEXOS.slnx`:
 
 | Suite | File | Covers |
@@ -452,14 +452,17 @@ turns `color`/`radius`/`space`/`type` values into brushes or setters.** Two them
 | `AVEXOS.Core.Tests` | [ChangePipelineTests.cs](../../tests/AVEXOS.Core.Tests/ChangePipelineTests.cs) | 3 cases: rollback with verifyRollback=false reports Failed, rollback with verifyRollback=true reports RolledBack, rollback without verifyRollback reports RolledBack |
 | `AVEXOS.Core.Tests` | [ChangePipelineRiskTests.cs](../../tests/AVEXOS.Core.Tests/ChangePipelineRiskTests.cs) | 3 cases: High-risk without confirmHighRisk denied, High-risk with confirmHighRisk=true succeeds, Low-risk without confirmHighRisk succeeds |
 | `AVEXOS.WindowsIntegration.Tests` | [WallpaperServiceTests.cs](../../tests/AVEXOS.WindowsIntegration.Tests/WallpaperServiceTests.cs) | 4 cases: ImportWallpaper copies file, throws on missing source, throws on guard deny, overwrites existing |
+| `AVEXOS.WindowsIntegration.Tests` | [MultiMonitorWallpaperTests.cs](../../tests/AVEXOS.WindowsIntegration.Tests/WallpaperServiceTests.cs) | 6 cases: monitor enumeration, unknown device handling, per-monitor settings persistence, apply-to-all |
+| `AVEXOS.WindowsIntegration.Tests` | [MonitorSlideshowServiceTests.cs](../../tests/AVEXOS.WindowsIntegration.Tests/WallpaperServiceTests.cs) | 10 cases: defaults, persistence, enable/disable, advance, reset, independent per-monitor state |
+| `AVEXOS.WindowsIntegration.Tests` | [MonitorDetectionTests.cs](../../tests/AVEXOS.WindowsIntegration.Tests/WallpaperServiceTests.cs) | 4 cases: non-null list, primary detection, fallback behavior |
+| `AVEXOS.App.Tests` | [ThemeSchedulerServiceTests.cs](../../tests/AVEXOS.App.Tests/ThemeSchedulerServiceTests.cs) | 8 cases: add/remove schedules, enable/disable persistence, JSON round-trip, disabled scheduler skips checks, time-match triggers apply, deduplication, first-match-wins |
+| `AVEXOS.App.Tests` | [ShortcutParserTests.cs](../../tests/AVEXOS.App.Tests/ShortcutParserTests.cs) | 44 cases: parsing valid/invalid shortcuts, format round-tripping, IsValid, IsSystemReserved, ConflictsWith, defaults completeness, special keys, case insensitivity |
+| `AVEXOS.ThemeEngine.Tests` | [UserThemeServiceTests.cs](../../tests/AVEXOS.ThemeEngine.Tests/UserThemeServiceTests.cs) | 9 cases: export creates valid JSON, import saves to user dir, import rejects invalid themes/missing files/bad JSON, delete removes files, LoadAll returns imported themes, LoadAll returns empty when no dir, export-then-import roundtrip |
+| `AVEXOS.Backup.Tests` | [SettingsBackupServiceTests.cs](../../tests/AVEXOS.Backup.Tests/SettingsBackupServiceTests.cs) | 11 cases: file creation/naming, JSON format, read/restore round-trip, tamper detection, missing file handling, listing order, deletion, retention cap at 10, empty settings, duplicate timestamps |
+| `AVEXOS.Core.Tests` | [SystemInfoServiceTests.cs](../../tests/AVEXOS.Core.Tests/SystemInfoServiceTests.cs) | 16 cases: Windows version, .NET version, app version, theme ID/mode defaults and stored values, session duration, machine/user name, processor count, memory, wallpaper path defaults and slideshow paths |
 | `AVEXOS.WindowsIntegration.Tests` | [AppDiscoveryServiceTests.cs](../../tests/AVEXOS.WindowsIntegration.Tests/AppDiscoveryServiceTests.cs) | 5 cases: returns results, required fields present, limited to 80, sorted by DisplayName, respects cancellation |
 
-No integration, compatibility, UI or performance suite exists. `JsonBackupStore`,
-`SqliteStore`, `WallpaperService` and `ThemeService` (WinUI wiring) have **zero automated coverage** — the wallpaper
-read/backup/apply/verify/restore cycle is verified by hand with
-[`gui-cycle.ps1`](../../scripts/gui-cycle.ps1), and the theme picker by
-[`theme-probe.ps1`](../../scripts/theme-probe.ps1). `ThemeResourceBuilder` (the token-to-resource
-conversion) is covered by 10 unit tests.
+No integration, compatibility, UI or performance suite exists. `SqliteStore` and `ThemeService` (WinUI wiring) have **zero automated coverage** — the wallpaper read/backup/apply/verify/restore cycle is verified by hand with [`gui-cycle.ps1`](../../scripts/gui-cycle.ps1), and the theme picker by [`theme-probe.ps1`](../../scripts/theme-probe.ps1). `ThemeResourceBuilder`, `UserThemeService`, `ThemeSchedulerService`, `ShortcutParser`, `SettingsBackupService`, `SystemInfoService`, `MonitorDetection`, `MonitorSlideshowService`, and multi-monitor `WallpaperService` methods are covered by 136 unit tests.
 
 Two weaknesses in the security suite, so nobody reads a green row as more than it is:
 

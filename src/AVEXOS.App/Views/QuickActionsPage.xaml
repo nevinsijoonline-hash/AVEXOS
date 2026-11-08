@@ -1,0 +1,97 @@
+<Page
+    x:Class="AVEXOS.App.QuickActionsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer Padding="{StaticResource AvexSpaceLg}">
+        <StackPanel Spacing="{StaticResource AvexSpaceLg}">
+
+            <!-- Page Header -->
+            <StackPanel Orientation="Horizontal" Spacing="{StaticResource AvexSpaceMd}">
+                <Image Source="ms-appx:///assets/avex-logo.jpeg" Width="48" Height="48" />
+                <StackPanel VerticalAlignment="Center" Spacing="2">
+                    <TextBlock Text="Quick Actions" FontSize="{StaticResource AvexTypeH2}" FontWeight="SemiBold"
+                               Foreground="{ThemeResource AvexTextPrimaryBrush}" />
+                    <TextBlock Text="Frequently used customization shortcuts" FontSize="{StaticResource AvexTypeBody}"
+                               Foreground="{ThemeResource AvexTextSecondaryBrush}" />
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Theme Mode Toggle -->
+            <Border Background="{ThemeResource AvexSurface1Brush}"
+                    BorderBrush="{ThemeResource AvexBorderSubtleBrush}"
+                    BorderThickness="1"
+                    CornerRadius="{StaticResource AvexCardCornerRadius}"
+                    Padding="{StaticResource AvexSpaceLg}">
+                <StackPanel Spacing="{StaticResource AvexSpaceSm}">
+                    <TextBlock Text="Theme Mode" FontSize="{StaticResource AvexTypeH3}" FontWeight="SemiBold"
+                               Foreground="{ThemeResource AvexTextPrimaryBrush}" />
+                    <TextBlock Text="Quickly switch between dark and light mode" FontSize="{StaticResource AvexTypeBody}"
+                               Foreground="{ThemeResource AvexTextTertiaryBrush}" />
+                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource AvexSpaceMd}" Margin="0,8,0,0">
+                        <ToggleButton x:Name="DarkModeToggle" Content="Dark Mode" Click="DarkModeToggle_Click"
+                                      MinWidth="120" />
+                        <ToggleButton x:Name="LightModeToggle" Content="Light Mode" Click="LightModeToggle_Click"
+                                      MinWidth="120" />
+                    </StackPanel>
+                    <TextBlock x:Name="ModeStatusText" Text="" FontSize="{StaticResource AvexTypeBody}"
+                               Foreground="{ThemeResource AvexTextSecondaryBrush}" />
+                </StackPanel>
+            </Border>
+
+            <!-- Theme Reset -->
+            <Border Background="{ThemeResource AvexSurface1Brush}"
+                    BorderBrush="{ThemeResource AvexBorderSubtleBrush}"
+                    BorderThickness="1"
+                    CornerRadius="{StaticResource AvexCardCornerRadius}"
+                    Padding="{StaticResource AvexSpaceLg}">
+                <StackPanel Spacing="{StaticResource AvexSpaceSm}">
+                    <TextBlock Text="Reset Theme" FontSize="{StaticResource AvexTypeH3}" FontWeight="SemiBold"
+                               Foreground="{ThemeResource AvexTextPrimaryBrush}" />
+                    <TextBlock Text="Revert to the default AVEX dark theme" FontSize="{StaticResource AvexTypeBody}"
+                               Foreground="{ThemeResource AvexTextTertiaryBrush}" />
+                    <Button Content="Reset to Default Theme" Click="ResetThemeButton_Click" Margin="0,8,0,0" />
+                    <TextBlock x:Name="ResetStatusText" Text="" FontSize="{StaticResource AvexTypeBody}"
+                               Foreground="{ThemeResource AvexTextSecondaryBrush}" />
+                </StackPanel>
+            </Border>
+
+            <!-- Wallpaper Refresh -->
+            <Border Background="{ThemeResource AvexSurface1Brush}"
+                    BorderBrush="{ThemeResource AvexBorderSubtleBrush}"
+                    BorderThickness="1"
+                    CornerRadius="{StaticResource AvexCardCornerRadius}"
+                    Padding="{StaticResource AvexSpaceLg}">
+                <StackPanel Spacing="{StaticResource AvexSpaceSm}">
+                    <TextBlock Text="Wallpaper" FontSize="{StaticResource AvexTypeH3}" FontWeight="SemiBold"
+                               Foreground="{ThemeResource AvexTextPrimaryBrush}" />
+                    <TextBlock Text="Refresh or re-apply the current wallpaper" FontSize="{StaticResource AvexTypeBody}"
+                               Foreground="{ThemeResource AvexTextTertiaryBrush}" />
+                    <Button Content="Refresh Wallpaper" Click="RefreshWallpaperButton_Click" Margin="0,8,0,0" />
+                    <TextBlock x:Name="WallpaperStatusText" Text="" FontSize="{StaticResource AvexTypeBody}"
+                               Foreground="{ThemeResource AvexTextSecondaryBrush}" />
+                </StackPanel>
+            </Border>
+
+            <!-- Cache and Logs -->
+            <Border Background="{ThemeResource AvexSurface1Brush}"
+                    BorderBrush="{ThemeResource AvexBorderSubtleBrush}"
+                    BorderThickness="1"
+                    CornerRadius="{StaticResource AvexCardCornerRadius}"
+                    Padding="{StaticResource AvexSpaceLg}">
+                <StackPanel Spacing="{StaticResource AvexSpaceSm}">
+                    <TextBlock Text="Maintenance" FontSize="{StaticResource AvexTypeH3}" FontWeight="SemiBold"
+                               Foreground="{ThemeResource AvexTextPrimaryBrush}" />
+                    <TextBlock Text="Clear cached data and log files" FontSize="{StaticResource AvexTypeBody}"
+                               Foreground="{ThemeResource AvexTextTertiaryBrush}" />
+                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource AvexSpaceSm}" Margin="0,8,0,0">
+                        <Button Content="Clear Cache" Click="ClearCacheButton_Click" />
+                        <Button Content="Clear Logs" Click="ClearLogsButton_Click" />
+                    </StackPanel>
+                    <TextBlock x:Name="MaintenanceStatusText" Text="" FontSize="{StaticResource AvexTypeBody}"
+                               Foreground="{ThemeResource AvexTextSecondaryBrush}" TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>

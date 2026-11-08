@@ -40,7 +40,7 @@ public sealed class ThemeService
 
         root.RequestedTheme = mode == "light" ? ElementTheme.Light : ElementTheme.Dark;
 
-        var theme = _catalog.BuiltIn.FirstOrDefault(t => t.Id == themeId);
+        var theme = _catalog.All.FirstOrDefault(t => t.Id == themeId);
         if (theme is null) return;
 
         var resourceSet = ThemeResourceBuilder.Build(theme);

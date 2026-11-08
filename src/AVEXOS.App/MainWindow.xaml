@@ -30,7 +30,15 @@
                 <NavigationViewItem Content="Activity" Tag="Activity">
                     <NavigationViewItem.Icon><FontIcon Glyph="&#xEA37;" /></NavigationViewItem.Icon>
                 </NavigationViewItem>
+                <NavigationViewItem Content="Quick Actions" Tag="QuickActions">
+                    <NavigationViewItem.Icon><FontIcon Glyph="&#xE7B8;" /></NavigationViewItem.Icon>
+                </NavigationViewItem>
             </NavigationView.MenuItems>
+            <NavigationView.FooterMenuItems>
+                <NavigationViewItem Content="Settings" Tag="Settings">
+                    <NavigationViewItem.Icon><FontIcon Glyph="&#xE713;" /></NavigationViewItem.Icon>
+                </NavigationViewItem>
+            </NavigationView.FooterMenuItems>
             <Frame x:Name="ContentFrame" Padding="24" />
         </NavigationView>
     </Grid>

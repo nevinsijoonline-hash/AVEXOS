@@ -122,6 +122,51 @@ public sealed class SqliteStore : IAuditLog, IOperationStore, ISettingsStore
         }
     }
 
+    public IReadOnlyDictionary<string, string> GetAll()
+    {
+        lock (_lock)
+        {
+            using var conn = Open();
+            var rows = conn.Query("SELECT Key, Value FROM Settings ORDER BY Key");
+            var dict = new Dictionary<string, string>();
+            foreach (var row in rows)
+            {
+                var k = row["Key"] as string;
+                var v = row["Value"] as string;
+                if (k is not null && v is not null)
+                    dict[k] = v;
+            }
+            return dict;
+        }
+    }
+
+    public void SetMany(IReadOnlyDictionary<string, string> values)
+    {
+        lock (_lock)
+        {
+            using var conn = Open();
+            using var tx = conn.BeginTransaction();
+            try
+            {
+                foreach (var (key, value) in values)
+                {
+                    using var cmd = conn.CreateCommand();
+                    cmd.Transaction = tx;
+                    cmd.CommandText = "INSERT OR REPLACE INTO Settings (Key, Value) VALUES (@k,@v)";
+                    var kp = cmd.CreateParameter(); kp.ParameterName = "@k"; kp.Value = key; cmd.Parameters.Add(kp);
+                    var vp = cmd.CreateParameter(); vp.ParameterName = "@v"; vp.Value = value; cmd.Parameters.Add(vp);
+                    cmd.ExecuteNonQuery();
+                }
+                tx.Commit();
+            }
+            catch
+            {
+                tx.Rollback();
+                throw;
+            }
+        }
+    }
+
     private SqliteConnection Open()
     {
         var conn = new SqliteConnection($"Data Source={_dbPath};Cache=Shared");

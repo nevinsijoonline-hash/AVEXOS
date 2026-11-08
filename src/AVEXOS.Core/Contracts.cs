@@ -20,6 +20,30 @@ public interface IWallpaperService
     AppearanceState Read();
     void Apply(AppearanceState state);
     string ImportWallpaper(string sourcePath);
+
+    // Multi-monitor support
+    IReadOnlyList<MonitorInfo> GetMonitors();
+    MonitorWallpaperState? ReadMonitor(string deviceId);
+    void ApplyToMonitor(string deviceId, AppearanceState state);
+    void ApplyToAllMonitors(AppearanceState state);
+}
+
+public interface IMonitorSlideshowService
+{
+    bool IsEnabled(string monitorDeviceId);
+    int GetIntervalMinutes(string monitorDeviceId);
+    void SetIntervalMinutes(string monitorDeviceId, int minutes);
+    IReadOnlyList<string> GetPaths(string monitorDeviceId);
+    void SetPaths(string monitorDeviceId, IReadOnlyList<string> paths);
+    void Enable(string monitorDeviceId);
+    void Disable(string monitorDeviceId);
+    string? Advance(string monitorDeviceId);
+
+    /// <summary>Advances the slideshow on all enabled monitors. Returns the last applied path.</summary>
+    string? Advance();
+
+    string? ApplyCurrent(string monitorDeviceId);
+    void Reset(string monitorDeviceId);
 }
 
 public interface IAppDiscoveryService
@@ -51,6 +75,8 @@ public interface ISettingsStore
 {
     string? Get(string key);
     void Set(string key, string value);
+    IReadOnlyDictionary<string, string> GetAll();
+    void SetMany(IReadOnlyDictionary<string, string> values);
 }
 
 public interface IClock

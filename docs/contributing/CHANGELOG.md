@@ -9,7 +9,49 @@ by working date.
 
 ---
 
-## 2026-11-08 (latest) — theme tokens now render into ResourceDictionary
+## 2026-11-08 (latest) — major feature expansion: 10 new capabilities
+
+### Added
+
+- **New wallpaper with AVEX OS logo.** Generated 1920x1080 wallpaper incorporating the logo with dark theme colors (#141517 background, #6E8BFF accent), hexagonal geometric patterns, and gradient effects. Replaced all references to the old `avex-wallpaper.png` with `avex-logo-wallpaper.png` in code, tests, and project files.
+
+- **Application icon.** Created `avex-logo.ico` (12,865 bytes, 4 sizes: 16x16, 32x32, 48x48, 256x256) and added `<ApplicationIcon>` to AVEXOS.App.csproj so the exe displays the logo in Windows.
+
+- **UI clarity improvements across all 5 views.** Added consistent 24px page padding, descriptive subtitles, visible card borders with 8px corner radius, section headers with helper text, uppercase labels with letter-spacing, three-tier typography hierarchy, styled ListView containers with separators, and AccentButtonStyle for primary actions. All spacing uses theme tokens instead of hardcoded values.
+
+- **Theme scheduler.** `ThemeSchedulerService` supports scheduled theme switches (time + theme ID + mode), checks every 60 seconds via `System.Threading.Timer`, applies theme on match, deduplicates to prevent double-apply within the same minute, and resets daily. UI in ThemesPage with enable/disable toggle, time picker, theme/mode selectors, and schedule list. **8 tests** covering add/remove, enable/disable, JSON round-trip, time-match triggers, deduplication, and first-match-wins.
+
+- **Theme export/import.** `UserThemeService` exports themes as JSON, imports with validation via `IThemeValidator`, saves to `AvexPaths.UserThemeDir`, deletes user themes (built-in protected), and loads all themes with user overrides. `BuiltInThemeCatalog` extended with `UserThemes` and `All` properties. UI in ThemesPage with import/export/delete buttons and source labels. **9 tests** covering export, import validation, delete, LoadAll, and round-trip.
+
+- **Settings backup/restore.** `SettingsBackupService` creates timestamped JSON backups with SHA256 integrity hash, lists backups newest-first, validates hash on read, restores via `SetMany()`, auto-deletes beyond 10 backups, and re-applies theme after restore. UI in SettingsPage with backup/restore buttons, history list, preview dialog, and confirmation. Extended `ISettingsStore` with `GetAll()` and `SetMany()`. **11 tests** covering file creation, JSON format, round-trip, tamper detection, listing, deletion, retention, and edge cases.
+
+- **Multi-monitor wallpaper support.** `MonitorDetection` enumerates displays via `EnumDisplayMonitors` Win32 API. `WallpaperService` extended with `GetMonitors()`, `ReadMonitor()`, `ApplyToMonitor()`, `ApplyToAllMonitors()` using `IDesktopWallpaper` COM interface with `SystemParametersInfo` fallback. `MonitorSlideshowService` provides per-monitor slideshow with independent paths, intervals, and state. UI in AppearancePage with monitor selector, details panel, per-monitor controls. **20 tests** (6 + 10 + 4) covering enumeration, per-monitor settings, apply-to-all, slideshow defaults, persistence, enable/disable, advance, reset, and independent state.
+
+- **System tray integration.** `TrayIconService` (~440 lines) creates hidden message-only window on dedicated STA thread, registers tray icon via `Shell_NotifyIconW` with `NOTIFYICON_VERSION_4`, shows right-click context menu (Open Control Panel, Switch Theme submenu, Next Wallpaper, Settings, Exit), handles left-click to open panel, marshals commands to UI thread via `DispatcherQueue.TryEnqueue`, and properly cleans up on dispose.
+
+- **Keyboard shortcuts.** `KeyboardShortcutService` registers global hotkeys via Win32 `RegisterHotKey` API on background STA thread with `WM_HOTKEY` message loop. `ShortcutParser` parses/formats/validates shortcut strings, detects system-reserved shortcuts (Alt+Tab, Win+L, Ctrl+Alt+Del), and checks conflicts. Default shortcuts: Ctrl+Shift+T (toggle theme), Ctrl+Shift+W (next wallpaper), Ctrl+Shift+A (open panel), Ctrl+Shift+S (open settings). UI in SettingsPage with shortcut recorder dialog. **44 tests** covering parsing, formatting, validation, system-reserved detection, conflicts, and defaults.
+
+- **System information dashboard.** `SystemInfoService` exposes Windows version, .NET version, app version, current theme, active wallpaper, session duration, machine name, user name, processor count, and available memory. HomePage shows detailed System Information panel with live-updating session timer. **16 tests** covering all properties.
+
+- **Theme preview before apply.** ThemesPage "Preview" button builds temporary `ResourceDictionary` from selected theme tokens, applies only to preview surface (not whole app), shows color swatches and sample UI elements. "Close Preview" removes temporary dictionary.
+
+- **Quick actions panel.** New QuickActionsPage with 4 action cards: Dark/Light Mode Toggle, Reset to Default Theme, Refresh Wallpaper, Clear Cache, Clear Logs. Added to MainWindow navigation.
+
+- **Custom color accent picker.** AppearancePage "Custom Accent Color" section with hex input, 8 preset color buttons, live preview surface, and save to settings.
+
+- **Wallpaper slideshow.** AppearancePage "Wallpaper Slideshow" section with per-monitor toggle, interval selector (15 min to daily), wallpaper list, add/remove/advance controls.
+
+### Tests
+
+**178 tests total** (22 Core + 28 ThemeEngine + 15 Backup + 32 WindowsIntegration + 29 Security + 52 App), all passing. New test projects: `AVEXOS.App.Tests` for ThemeSchedulerService and ShortcutParser.
+
+### Documentation
+
+[ARCHITECTURE.md](../architecture/ARCHITECTURE.md) §11 (test count to 178, new test rows), [README.md](../../README.md) (test count), [DEVELOPER_GUIDE.md](../setup/DEVELOPER_GUIDE.md) (test count), [CONTRIBUTING.md](CONTRIBUTING.md) (test count).
+
+---
+
+## 2026-11-08 (newer) — theme tokens now render into ResourceDictionary
 
 ### Fixed
 

@@ -72,4 +72,25 @@
     </ResourceDictionary.ThemeDictionaries>
 
     <FontFamily x:Key="AvexFontFamily">Segoe UI Variable, Segoe UI, sans-serif</FontFamily>
+
+    <!-- Spacing tokens -->
+    <x:Double x:Key="AvexSpaceXxs">4</x:Double>
+    <x:Double x:Key="AvexSpaceXs">8</x:Double>
+    <x:Double x:Key="AvexSpaceSm">12</x:Double>
+    <x:Double x:Key="AvexSpaceMd">16</x:Double>
+    <x:Double x:Key="AvexSpaceLg">24</x:Double>
+    <x:Double x:Key="AvexSpaceXl">32</x:Double>
+    <x:Double x:Key="AvexSpaceXxl">48</x:Double>
+
+    <!-- Typography size tokens -->
+    <x:Double x:Key="AvexTypeCaption">11</x:Double>
+    <x:Double x:Key="AvexTypeBody">13</x:Double>
+    <x:Double x:Key="AvexTypeBodyLg">14</x:Double>
+    <x:Double x:Key="AvexTypeH3">16</x:Double>
+    <x:Double x:Key="AvexTypeH2">20</x:Double>
+    <x:Double x:Key="AvexTypeH1">24</x:Double>
+    <x:Double x:Key="AvexTypeDisplay">28</x:Double>
+
+    <!-- Card corner radius -->
+    <CornerRadius x:Key="AvexCardCornerRadius">8</CornerRadius>
 </ResourceDictionary>

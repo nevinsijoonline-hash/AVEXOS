@@ -2,27 +2,63 @@
     x:Class="AVEXOS.App.ApplicationsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <ScrollViewer>
-        <StackPanel Spacing="16">
-            <StackPanel Orientation="Horizontal" Spacing="16">
-                <Image Source="ms-appx:///assets/avex-logo.jpeg" Width="48" Height="48" />
-                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                    <TextBlock Text="Applications" FontSize="20" FontWeight="SemiBold" />
-                    <Button Content="Refresh" Click="RefreshButton_Click" />
+    <ScrollViewer Padding="{StaticResource AvexSpaceLg}">
+        <StackPanel Spacing="{StaticResource AvexSpaceLg}">
+
+            <!-- Page Header -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="{StaticResource AvexSpaceMd}">
+                    <Image Source="ms-appx:///assets/avex-logo.jpeg" Width="48" Height="48" />
+                    <StackPanel VerticalAlignment="Center" Spacing="2">
+                        <TextBlock Text="Applications" FontSize="{StaticResource AvexTypeH2}" FontWeight="SemiBold"
+                                   Foreground="{ThemeResource AvexTextPrimaryBrush}" />
+                        <TextBlock Text="Manage installed applications and their capabilities" FontSize="{StaticResource AvexTypeBody}"
+                                   Foreground="{ThemeResource AvexTextSecondaryBrush}" />
+                    </StackPanel>
                 </StackPanel>
-            </StackPanel>
-            <TextBlock x:Name="StatusText" Text="Loading..." Foreground="{ThemeResource AvexTextSecondaryBrush}" />
-            <ListView x:Name="AppList" MaxHeight="600">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Spacing="4">
-                            <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" />
-                            <TextBlock Text="{Binding Publisher}" Foreground="{ThemeResource AvexTextSecondaryBrush}" />
-                            <TextBlock Text="{Binding CapabilityReason}" Foreground="{ThemeResource AvexTextTertiaryBrush}" FontSize="11" TextWrapping="Wrap" />
-                        </StackPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                <Button Grid.Column="1" Content="Refresh" Click="RefreshButton_Click"
+                        VerticalAlignment="Center" />
+            </Grid>
+
+            <!-- Status -->
+            <TextBlock x:Name="StatusText" Text="Loading..." FontSize="{StaticResource AvexTypeBody}"
+                       Foreground="{ThemeResource AvexTextSecondaryBrush}" />
+
+            <!-- Application List -->
+            <Border Background="{ThemeResource AvexSurface1Brush}"
+                    BorderBrush="{ThemeResource AvexBorderSubtleBrush}"
+                    BorderThickness="1"
+                    CornerRadius="{StaticResource AvexCardCornerRadius}"
+                    Padding="{StaticResource AvexSpaceMd}">
+                <ListView x:Name="AppList" MaxHeight="600">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="Padding" Value="12,10" />
+                            <Setter Property="Margin" Value="0,0,0,2" />
+                            <Setter Property="CornerRadius" Value="4" />
+                            <Setter Property="BorderBrush" Value="{ThemeResource AvexBorderSubtleBrush}" />
+                            <Setter Property="BorderThickness" Value="0,0,0,1" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Spacing="{StaticResource AvexSpaceXxs}">
+                                <TextBlock Text="{Binding DisplayName}" FontSize="{StaticResource AvexTypeBodyLg}"
+                                           FontWeight="SemiBold" Foreground="{ThemeResource AvexTextPrimaryBrush}" />
+                                <TextBlock Text="{Binding Publisher}" FontSize="{StaticResource AvexTypeBody}"
+                                           Foreground="{ThemeResource AvexTextSecondaryBrush}" />
+                                <TextBlock Text="{Binding CapabilityReason}" FontSize="{StaticResource AvexTypeCaption}"
+                                           Foreground="{ThemeResource AvexTextTertiaryBrush}" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Border>
+
         </StackPanel>
     </ScrollViewer>
 </Page>
