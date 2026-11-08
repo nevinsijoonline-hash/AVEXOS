@@ -5,6 +5,7 @@ using Xunit;
 
 namespace AVEXOS.WindowsIntegration.Tests;
 
+[Collection("WallpaperTests")]
 public class WallpaperServiceTests : IDisposable
 {
     private readonly string _tempDir;
@@ -146,6 +147,7 @@ file class DenyAllGuard : IFileSystemGuard
     public GuardResult EnsureDirectory(string path) => new(false, path, "Denied by test");
 }
 
+[Collection("WallpaperTests")]
 public class MultiMonitorWallpaperTests : IDisposable
 {
     private readonly string _tempDir;
@@ -262,6 +264,7 @@ public class MultiMonitorWallpaperTests : IDisposable
     }
 }
 
+[Collection("WallpaperTests")]
 public class MonitorSlideshowServiceTests : IDisposable
 {
     private readonly string _tempDir;
