@@ -8,6 +8,12 @@
                         IsSettingsVisible="False"
                         SelectionChanged="NavView_SelectionChanged"
                         PaneDisplayMode="Left">
+            <NavigationView.PaneHeader>
+                <StackPanel Orientation="Horizontal" Spacing="8" Padding="0,16,0,0">
+                    <Image Source="ms-appx:///assets/avex-logo.jpeg" Width="32" Height="32" />
+                    <TextBlock Text="AVEX OS" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" />
+                </StackPanel>
+            </NavigationView.PaneHeader>
             <NavigationView.MenuItems>
                 <NavigationViewItem Content="Home" Tag="Home">
                     <NavigationViewItem.Icon><FontIcon Glyph="&#xE80F;" /></NavigationViewItem.Icon>
