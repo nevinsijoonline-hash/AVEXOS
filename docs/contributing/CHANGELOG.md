@@ -9,7 +9,27 @@ by working date.
 
 ---
 
-## 2026-11-08 (latest) — rollback is now verified
+## 2026-11-08 (latest) — risk level now gates High-risk changes
+
+### Fixed
+
+- **`ChangeRequest.Risk` was recorded but never acted as a gate.** Every change asked for the same
+  single approval regardless of risk level. High-risk changes now require a `confirmHighRisk` delegate;
+  if not provided or if it returns false, the operation is denied. Low and Medium risk changes proceed
+  with only the standard `approve` delegate.
+  **TDD, in order:** a new `ChangePipelineRiskTests.cs` file ran first with three cases: High-risk
+  without confirmHighRisk denied, High-risk with confirmHighRisk=true succeeds, Low-risk without
+  confirmHighRisk succeeds. The first case failed against the shipped code (no confirmHighRisk
+  parameter); after adding the parameter and the gating logic at stage 8b, all three passed.
+
+### Documentation
+
+[ARCHITECTURE.md](../architecture/ARCHITECTURE.md) §5 (signature, stage 8b, gaps section), §11 (test
+count) — all now describe the fixed behaviour.
+
+---
+
+## 2026-11-08 (newer) — rollback is now verified
 
 ### Fixed
 
@@ -390,8 +410,8 @@ Tracked so nobody has to rediscover it:
 | Security | **No handle-based re-check between guard and write** (T-T6 shape 2): `ImportWallpaper` copies with `overwrite: true` onto a predictable filename, so a link planted there *after* the decision still redirects it. The pre-check half was fixed 2026-11-08 — see the top entry — and mount points stay unhandled. [THREAT_MODEL.md](../security/THREAT_MODEL.md) §5 risk #4. |
 | Security | `SQLitePCLRaw.lib.e_sqlite3` 2.1.11 advisory GHSA-2m69-gcr7-jv3q, transitive via `Microsoft.Data.Sqlite` 10.0.0 — unresolved, and a reason not to ship. |
 | Security | `RegistryPolicy` matches roots with `StartsWith`, so a sibling key beginning with a root is approved (`…\Control Panel\DesktopEvil` → ALLOW, measured). Harmless while no sensitive HKCU key is a prefix-extension of a root. [THREAT_MODEL.md](../security/THREAT_MODEL.md) §5 risk #9. (`HKCU\Software\Classes` itself was removed from the list 2026-11-08 — see the top entry.) |
-| Correctness | Risk level does not gate anything. Rollback verification was added 2026-11-08 — the pipeline now accepts an optional `verifyRollback` delegate and marks the operation `Failed` if it returns false. The direction-neutral success text was fixed 2026-11-08 — "Applied and verified." is now "Verified." so a restore does not claim an apply. |
-| Coverage | No tests for `WallpaperService`, `AppDiscoveryService` or any UI. The 38 tests cover path policy, registry policy, backup integrity, theme validation and pipeline rollback verification. |
+| Correctness | Rollback verification was added 2026-11-08 — the pipeline now accepts an optional `verifyRollback` delegate and marks the operation `Failed` if it returns false. Risk level gating was added 2026-11-08 — High-risk changes now require a `confirmHighRisk` delegate. The direction-neutral success text was fixed 2026-11-08 — "Applied and verified." is now "Verified." so a restore does not claim an apply. |
+| Coverage | No tests for `WallpaperService`, `AppDiscoveryService` or any UI. The 41 tests cover path policy, registry policy, backup integrity, theme validation, pipeline rollback verification and risk gating. |
 | Scope | Only wallpaper ships. Shortcuts, folder/drive icons, cursors, sounds, system accent, adapters, plugins, installer, signing, packaging: designed, **not implemented**. File-type icons are further out: the hive they live in is refused by the guard (rule 22). |
 | Scope | Theme apply affects the AVEX window only. It does not restyle Windows, and must not be described as if it did. |
 | Scope | A theme's own `color`/`radius`/`space`/`type` values are validated but **never rendered** — `Apply` only flips `RequestedTheme` between Light and Dark, so palettes in the JSON are inert and same-mode themes are indistinguishable. Rendering tokens into a `ResourceDictionary` is the prerequisite for calling this a theme engine. |

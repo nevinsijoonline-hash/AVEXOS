@@ -33,7 +33,8 @@ public sealed class ChangePipeline
         Func<bool> verify,
         Action<TState> restore,
         Func<ChangeRequest, Task<bool>> approve,
-        Func<bool>? verifyRollback = null)
+        Func<bool>? verifyRollback = null,
+        Func<ChangeRequest, Task<bool>>? confirmHighRisk = null)
     {
         var operationId = $"op-{_clock.UtcNow:yyyyMMddHHmmss}-{Guid.NewGuid().ToString("N")[..8]}";
 
@@ -86,6 +87,31 @@ public sealed class ChangePipeline
             _audit.Append(new AuditEntry(_clock.UtcNow, request.Kind, request.TargetId,
                 operationId, "Denied", "Declined by user; no change made."));
             return new ChangeResult(ChangeState.Denied, request.TargetId, false, "Declined by user.");
+        }
+
+        // Stage 8b — High-risk changes require explicit second confirmation.
+        if (request.Risk == RiskLevel.High)
+        {
+            if (confirmHighRisk is null)
+            {
+                _operations.Save(new OperationRecord(operationId, request.TargetId, request.Kind,
+                    request.Risk, ChangeState.Denied, _clock.UtcNow,
+                    "High-risk change requires confirmHighRisk delegate."));
+                _audit.Append(new AuditEntry(_clock.UtcNow, request.Kind, request.TargetId,
+                    operationId, "Denied", "High-risk change denied: no confirmHighRisk delegate provided."));
+                return new ChangeResult(ChangeState.Denied, request.TargetId, false,
+                    "High-risk change requires explicit confirmation. Provide confirmHighRisk delegate.");
+            }
+
+            if (!await confirmHighRisk(request))
+            {
+                _operations.Save(new OperationRecord(operationId, request.TargetId, request.Kind,
+                    request.Risk, ChangeState.Denied, _clock.UtcNow, "High-risk confirmation declined."));
+                _audit.Append(new AuditEntry(_clock.UtcNow, request.Kind, request.TargetId,
+                    operationId, "Denied", "High-risk confirmation declined by user."));
+                return new ChangeResult(ChangeState.Denied, request.TargetId, false,
+                    "High-risk change declined.");
+            }
         }
 
         // Stage 9 — apply.

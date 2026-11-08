@@ -132,7 +132,8 @@ public Task<ChangeResult> ExecuteAsync<TState>(
     Func<bool> verify,                     // read back and compare
     Action<TState> restore,                // undo, used only on failure
     Func<ChangeRequest, Task<bool>> approve,  // UI consent, awaited on the UI thread
-    Func<bool>? verifyRollback = null)     // optional: verify restore succeeded
+    Func<bool>? verifyRollback = null,     // optional: verify restore succeeded
+    Func<ChangeRequest, Task<bool>>? confirmHighRisk = null)  // required for High-risk changes
 ```
 
 Stage order as it actually runs, against the 14-stage plan:
@@ -142,10 +143,11 @@ Stage order as it actually runs, against the 14-stage plan:
 2  read current value    ← capture()
 3  capability check      ✗ not in the pipeline; CapabilityRegistry is consulted at discovery only
 4  guard                 ← EnsureWritable(request.PathToWrite), when the change writes a file
-5  classify risk         ← ChangeRequest.Risk, recorded but not used to branch
+5  classify risk         ← ChangeRequest.Risk, recorded and now used to gate High-risk changes
 6  create backup         ← _backups.Create(targetId, original, description) — aborts the change on failure
 7  operation record      ← saved as Pending
 8  approval              ← await approve(request); decline ⇒ Denied, nothing applied
+8b high-risk confirm    ← if Risk==High, await confirmHighRisk(request); missing or declined ⇒ Denied
 9  apply                 ← apply(original), i.e. the new value
 10 read back and verify  ← verify(); false ⇒ rollback
 11 mark state            ← Verified / RolledBack / Denied / Failed
@@ -154,11 +156,11 @@ Stage order as it actually runs, against the 14-stage plan:
 14 diagnostic bundle     ✗ not implemented; bootstrap.log only
 ```
 
-One honest gap in that order:
+No honest gaps remain in the stage order.
 
-- **Risk is not a gate.** Stages 5 and 8 do not correlate — every change asks for approval, and no
-  change is treated as High enough to need extra confirmation. Low/medium/high currently affects only
-  what is recorded.
+Risk gating was added on 2026-11-08: stage 8b requires a `confirmHighRisk` delegate for High-risk
+changes. If the delegate is not provided or returns false, the operation is denied. Low and Medium
+risk changes proceed with only the standard `approve` delegate.
 
 Rollback verification was added on 2026-11-08: stage 13 now calls `verifyRollback()` after `restore()`
 when the delegate is provided. If verification fails, the operation is marked `Failed` instead of
@@ -437,7 +439,7 @@ turns `color`/`radius`/`space`/`type` values into brushes or setters.** Two them
 
 ## 11. Testing
 
-**[built]** — four xUnit projects, 38 tests total (24 + 8 + 3 + 3), green on 2026-11-08 with
+**[built]** — four xUnit projects, 41 tests total (24 + 8 + 3 + 6), green on 2026-11-08 with
 `dotnet test AVEXOS.slnx`:
 
 | Suite | File | Covers |
@@ -447,6 +449,7 @@ turns `color`/`radius`/`space`/`type` values into brushes or setters.** Two them
 | `AVEXOS.ThemeEngine.Tests` | [ThemeValidatorTests.cs](../../tests/AVEXOS.ThemeEngine.Tests/ThemeValidatorTests.cs) | id/name/version/mode/font rules, required and malformed colours, numeric ranges, Level D rejection |
 | `AVEXOS.Backup.Tests` | [JsonBackupStoreTests.cs](../../tests/AVEXOS.Backup.Tests/JsonBackupStoreTests.cs) | 3 cases: tampered backup rejected, unhashed backup rejected, valid hashed backup accepted |
 | `AVEXOS.Core.Tests` | [ChangePipelineTests.cs](../../tests/AVEXOS.Core.Tests/ChangePipelineTests.cs) | 3 cases: rollback with verifyRollback=false reports Failed, rollback with verifyRollback=true reports RolledBack, rollback without verifyRollback reports RolledBack |
+| `AVEXOS.Core.Tests` | [ChangePipelineRiskTests.cs](../../tests/AVEXOS.Core.Tests/ChangePipelineRiskTests.cs) | 3 cases: High-risk without confirmHighRisk denied, High-risk with confirmHighRisk=true succeeds, Low-risk without confirmHighRisk succeeds |
 
 No integration, compatibility, UI or performance suite exists. `JsonBackupStore`,
 `SqliteStore`, `WallpaperService` and `ThemeService` have **zero automated coverage** — the wallpaper
